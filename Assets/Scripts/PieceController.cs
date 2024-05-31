@@ -7,8 +7,8 @@ public class PieceController : MonoBehaviour
     public GameObject controller;
     public GameObject movePlate;
 
-    private int xBoard = -1;
-    private int yBoard = -1;
+    public int xBoard = -1;
+    public int yBoard = -1;
 
     private string player;
 
@@ -46,22 +46,4 @@ public class PieceController : MonoBehaviour
         this.transform.position = new Vector3(x, y, -1.0f);
     }
 
-    public int GetXBoard() {
-        return xBoard;
-    }
-
-    public int GetYBoard()
-    {
-        return yBoard;
-    }
-
-    public void SetXBoard(int x)
-    {
-        xBoard = x;
-    }
-
-    public void SetYBoard(int y)
-    {
-        yBoard = y;
-    }
 }

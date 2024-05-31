@@ -17,6 +17,8 @@ public class GameScript : MonoBehaviour
     //private bool gameOver = false;
 
     // Start is called before the first frame update
+
+    
     void Start()
     {
         playerWhite = new GameObject[] {
@@ -32,6 +34,8 @@ public class GameScript : MonoBehaviour
             SetPosition(playerBlack[i]);
             SetPosition(playerWhite[i]);
         }
+
+        
     }
 
     public GameObject Create(string name, int x, int y) 
@@ -39,17 +43,19 @@ public class GameScript : MonoBehaviour
         GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
         PieceController controller = obj.GetComponent<PieceController>();
         controller.name = name;
-        controller.SetXBoard(x);
-        controller.SetYBoard(y);
+        controller.xBoard = x;
+        controller.yBoard = y;
         controller.Activate();
         return obj;
     }
+
+    
 
     public void SetPosition(GameObject obj) 
     {
         PieceController controller = obj.GetComponent<PieceController>();
 
-        positions[controller.GetXBoard(), controller.GetYBoard()] = obj;
+        positions[controller.xBoard, controller.yBoard] = obj;
 
     }
    
