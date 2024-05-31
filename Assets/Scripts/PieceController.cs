@@ -12,6 +12,9 @@ public class PieceController : MonoBehaviour
     public float xBoard = -1f;
     public float yBoard = -1f;
 
+    public int health;
+    public int attack;
+
     private string player;
 
     public Sprite black_king, black_knight, black_pawn;
@@ -23,14 +26,14 @@ public class PieceController : MonoBehaviour
 
         SetCoords();
 
-        switch (this.name) 
+        switch (this.name)
         {
-            case "black_king": this.GetComponent<SpriteRenderer>().sprite = black_king; player = "black"; break;
-            case "black_knight": this.GetComponent<SpriteRenderer>().sprite = black_knight; player = "black"; break;
-            case "black_pawn": this.GetComponent<SpriteRenderer>().sprite = black_pawn; player = "black"; break;
-            case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; break;
-            case "white_knight": this.GetComponent<SpriteRenderer>().sprite = white_knight; player = "white"; break;
-            case "white_pawn": this.GetComponent<SpriteRenderer>().sprite = white_pawn; player = "white"; break;
+            case "black_king": this.GetComponent<SpriteRenderer>().sprite = black_king; player = "black";  attack = 2; health = 8; break;
+            case "black_knight": this.GetComponent<SpriteRenderer>().sprite = black_knight; player = "black"; attack = 3; health = 4; break;
+            case "black_pawn": this.GetComponent<SpriteRenderer>().sprite = black_pawn; player = "black"; attack = 2 ; health = 3; break;
+            case "white_king": this.GetComponent<SpriteRenderer>().sprite = white_king; player = "white"; attack = 2; health = 8; break;
+            case "white_knight": this.GetComponent<SpriteRenderer>().sprite = white_knight; player = "white"; attack = 3; health = 4; break;
+            case "white_pawn": this.GetComponent<SpriteRenderer>().sprite = white_pawn; player = "white"; attack = 2; health = 3; break;
         }
     }
 

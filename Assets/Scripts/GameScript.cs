@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameScript : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class GameScript : MonoBehaviour
     private GameObject[,] positions = new GameObject[7,7];
     private GameObject[] playerBlack  = new GameObject[7];
     private GameObject[] playerWhite = new GameObject[7];
+
+    private GameObject black_king;
+    private GameObject white_king;
 
     private string currentPlayer = "white";
 
@@ -33,9 +37,7 @@ public class GameScript : MonoBehaviour
         {
             SetPosition(playerBlack[i]);
             SetPosition(playerWhite[i]);
-        }
-
-        
+        } 
     }
 
     public GameObject Create(string name, int x, int y) 
@@ -93,6 +95,23 @@ public class GameScript : MonoBehaviour
 
     public void Update()
     {
-        if (gameOver == true)gameOver = false;
+        black_king = GameObject.Find("black_king");
+        white_king = GameObject.Find("white_king");
+
+        if (black_king == null)
+        {
+            gameOver = true;
+        }
+        else if (white_king = null)
+        {
+            gameOver = true;
+        }
+
+        if (gameOver == true)
+        {
+            SceneManager.LoadScene("SampleScene");
+            gameOver = false;
+        }
+
     }
 }

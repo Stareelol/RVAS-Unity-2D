@@ -99,6 +99,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
+  move: {fileID: 8300000, guid: f148fb21922878f49b6da74601ce8d5c, type: 3}
+  capture: {fileID: 8300000, guid: b207d141623b7ff48ba4a5fabd0fab44, type: 3}
   attack: 0
 --- !u!61 &5015535548305409062
 BoxCollider2D:
