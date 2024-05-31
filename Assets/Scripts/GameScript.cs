@@ -22,11 +22,11 @@ public class GameScript : MonoBehaviour
     void Start()
     {
         playerWhite = new GameObject[] {
-            Create("white_pawn",0,0), Create("white_pawn",1,0), Create("white_bishop",2,0), Create("white_king",3,0), Create("white_bishop",4,0), Create("white_pawn",5,0), Create("white_pawn",6,0)
+            Create("white_pawn",0,0), Create("white_pawn",1,0), Create("white_knight",2,0), Create("white_king",3,0), Create("white_knight",4,0), Create("white_pawn",5,0), Create("white_pawn",6,0)
         };
 
         playerBlack = new GameObject[] {
-            Create("black_pawn",0,7), Create("black_pawn",1,7), Create("black_bishop",2,7), Create("black_king",3,7), Create("black_bishop",4,7), Create("black_pawn",5,7), Create("black_pawn",6,7)
+            Create("black_pawn",0,7), Create("black_pawn",1,7), Create("black_knight",2,7), Create("black_king",3,7), Create("black_knight",4,7), Create("black_pawn",5,7), Create("black_pawn",6,7)
         };
 
         for (int i = 0; i < playerBlack.Length; i++)
@@ -57,6 +57,17 @@ public class GameScript : MonoBehaviour
 
         positions[(int) controller.xBoard, (int) controller.yBoard] = obj;
 
+    }
+
+    public void SetPositionEmpty(int x, int y)
+    {
+        positions[x, y] = null;
+    }
+
+    public bool PositionOnBoard(int x, int y)
+    {
+        if (x < 0 || y < 0 || x >= positions.GetLength(0) || y >= positions.GetLength(1)) return false;
+        return true;
     }
    
 }
