@@ -542,6 +542,8 @@ MonoBehaviour:
   username_field: {fileID: 1823257806}
   password_field: {fileID: 301759528}
   errorMsg: {fileID: 2006113949}
+  usernameMsg: {fileID: 0}
+  passwordMsg: {fileID: 0}
 --- !u!4 &580777723
 Transform:
   m_ObjectHideFlags: 0
@@ -1930,7 +1932,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Registration failed! Username already exists!
+  m_text: Username vec postoji u bazi!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

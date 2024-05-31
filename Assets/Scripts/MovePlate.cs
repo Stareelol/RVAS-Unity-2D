@@ -9,13 +9,24 @@ public class MovePlate : MonoBehaviour
 
     GameObject createdByPiece;
 
+    GameObject board;
+
     int matrixX;
     int matrixY;
 
     public bool attack = false;
 
+    AudioSource move;
+    AudioSource capture;
+
     public void Start()
     {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        move = controller.GetComponent<AudioSource>();
+        board = GameObject.FindGameObjectWithTag("Board");
+        capture = board.GetComponent<AudioSource>();
+
+
         if (attack)
         {
             // Change to red
@@ -39,6 +50,8 @@ public class MovePlate : MonoBehaviour
             {
                 Destroy(defender);
 
+                capture.Play(0);
+
                 if (createdByPiece.GetComponent<PieceController>().health <= 0) Destroy(createdByPiece);
 
                 controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
@@ -59,6 +72,7 @@ public class MovePlate : MonoBehaviour
             else if (createdByPiece.GetComponent<PieceController>().health <= 0)
             {
                 Destroy(createdByPiece);
+                capture.Play(0);
                 controller.GetComponent<GameScript>().NextTurn();
                 createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
             }
@@ -66,6 +80,7 @@ public class MovePlate : MonoBehaviour
             {
                 Destroy(defender);
                 Destroy(createdByPiece);
+                capture.Play(0);
                 controller.GetComponent<GameScript>().NextTurn();
                 createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
             }
@@ -73,9 +88,12 @@ public class MovePlate : MonoBehaviour
             {
                 controller.GetComponent<GameScript>().NextTurn();
                 createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
+                move.Play(0);
             }
         }
         else {
+
+            move.Play(0);
 
             controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
 
