@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using MySql.Data.MySqlClient;
 using System.Data;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class ScoreScript : MonoBehaviour
 {
@@ -13,7 +14,10 @@ public class ScoreScript : MonoBehaviour
     public TextMeshProUGUI text;
     private string connectionString;
 
-
+    public void onClickBack()
+    {
+        SceneManager.LoadScene("Main Menu");
+    }
     void Start()
     {
         connectionString = "Server=localhost;Database=game_db;User ID=root;Pooling=false;";
