@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using MySql.Data.MySqlClient;
 
 public class GameScript : MonoBehaviour
 {
+
+    private string connectionString;
 
     public GameObject chesspiece;
 
@@ -25,6 +28,8 @@ public class GameScript : MonoBehaviour
 
     void Start()
     {
+        connectionString = "Server=localhost;Database=game_db;User ID=root;Pooling=false;";
+
         playerWhite = new GameObject[] {
             Create("white_pawn",0,0), Create("white_pawn",1,0), Create("white_knight",2,0), Create("white_king",3,0), Create("white_knight",4,0), Create("white_pawn",5,0), Create("white_pawn",6,0)
         };
@@ -100,18 +105,39 @@ public class GameScript : MonoBehaviour
 
         if (black_king == null)
         {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (MySqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "UPDATE users SET wins = wins + 1 WHERE username = @username";
+                    command.Parameters.AddWithValue("@username", DatabaseConnector.currentPlayer);
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
             gameOver = true;
         }
-        else if (white_king = null)
+        if (white_king == null)
         {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                using (MySqlCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "UPDATE users SET losses = losses + 1 WHERE username = @username";
+                    command.Parameters.AddWithValue("@username", DatabaseConnector.currentPlayer);
+                    command.ExecuteNonQuery();
+                }
+                connection.Close();
+            }
             gameOver = true;
         }
 
         if (gameOver == true)
         {
-            SceneManager.LoadScene("SampleScene");
+            SceneManager.LoadScene("Main Menu");
             gameOver = false;
         }
-
     }
 }

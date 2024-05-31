@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovePlate : MonoBehaviour
@@ -36,30 +37,24 @@ public class MovePlate : MonoBehaviour
 
             if (defender.GetComponent<PieceController>().health <= 0)
             {
-                if (createdByPiece.GetComponent<PieceController>().health <= 0)
-                {
-                    Destroy(createdByPiece);
-                    controller.GetComponent<GameScript>().NextTurn();
-                    createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
-                }
-                else
-                {
-                    Destroy(defender);
+                Destroy(defender);
 
-                    controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
+                if (createdByPiece.GetComponent<PieceController>().health <= 0) Destroy(createdByPiece);
 
-                    createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
-                    createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
+                controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
 
-                    createdByPiece.GetComponent<PieceController>().SetCoords();
+                createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
+                createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
 
-                    controller.GetComponent<GameScript>().SetPosition(createdByPiece);
+                createdByPiece.GetComponent<PieceController>().SetCoords();
 
-                    controller.GetComponent<GameScript>().NextTurn();
+                controller.GetComponent<GameScript>().SetPosition(createdByPiece);
 
-                    createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
-                }
+                controller.GetComponent<GameScript>().NextTurn();
 
+                createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
+
+                return;
             }
             else if (createdByPiece.GetComponent<PieceController>().health <= 0)
             {
@@ -79,7 +74,7 @@ public class MovePlate : MonoBehaviour
                 controller.GetComponent<GameScript>().NextTurn();
                 createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
             }
-            }
+        }
         else {
 
             controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
