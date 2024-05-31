@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PieceController : MonoBehaviour
 {
@@ -39,10 +40,18 @@ public class PieceController : MonoBehaviour
         float y = yBoard;
 
         x *= 1.4f;
-        y *= 1.2f;
-
         x += -7.2f;
-        y += -4.2f;
+
+        switch (y)
+        {
+            case 0: y = -4.2f; break;
+            case 1: y = -2.8f; break;
+            case 2: y = -1.4f; break;
+            case 3: y = 0f; break;
+            case 4: y = 1.4f; break;
+            case 5: y = 2.8f; break;
+            case 6: y = 4.2f; break;
+        }
 
         this.transform.position = new Vector3(x, y, -1.0f);
     }
@@ -74,9 +83,9 @@ public class PieceController : MonoBehaviour
                 KingMovePlate();
                 break;
             case "black_pawn":
-                PawnMovePlate((int) xBoard, (int) yBoard - 2);
-                PawnMovePlate((int)xBoard + 1, (int)yBoard - 2);
-                PawnMovePlate((int)xBoard - 1, (int)yBoard - 2);
+                PawnMovePlate((int)xBoard, (int)yBoard - 1);
+                PawnMovePlate((int)xBoard + 1, (int)yBoard - 1);
+                PawnMovePlate((int)xBoard - 1, (int)yBoard - 1);
                 break;
             case "white_pawn":
                 PawnMovePlate((int)xBoard, (int) yBoard + 1);
@@ -90,22 +99,22 @@ public class PieceController : MonoBehaviour
     {
         PointMovePlate((int)xBoard + 2, (int)yBoard + 1);
         PointMovePlate((int)xBoard + 1, (int)yBoard + 2);
-        PointMovePlate((int)xBoard - 1, (int)yBoard - 3);
-        PointMovePlate((int)xBoard - 2, (int)yBoard - 2);
-        PointMovePlate((int)xBoard + 1, (int)yBoard - 3);
+        PointMovePlate((int)xBoard - 1, (int)yBoard - 2);
+        PointMovePlate((int)xBoard - 2, (int)yBoard - 1);
+        PointMovePlate((int)xBoard + 1, (int)yBoard - 2);
         PointMovePlate((int)xBoard - 1, (int)yBoard + 2);
-        PointMovePlate((int)xBoard + 2, (int)yBoard - 2);
+        PointMovePlate((int)xBoard + 2, (int)yBoard - 1);
         PointMovePlate((int)xBoard - 2, (int)yBoard + 1);
     }
 
     public void KingMovePlate()
     {
         PointMovePlate((int)xBoard, (int)yBoard + 1);
-        PointMovePlate((int)xBoard, (int)yBoard - 2);
-        PointMovePlate((int)xBoard - 1, (int)yBoard - 2);
+        PointMovePlate((int)xBoard, (int)yBoard - 1);
+        PointMovePlate((int)xBoard - 1, (int)yBoard - 1);
         PointMovePlate((int)xBoard - 1, (int)yBoard);
         PointMovePlate((int)xBoard - 1, (int)yBoard + 1);
-        PointMovePlate((int)xBoard + 1, (int)yBoard - 2);
+        PointMovePlate((int)xBoard + 1, (int)yBoard - 1);
         PointMovePlate((int)xBoard + 1, (int)yBoard);
         PointMovePlate((int)xBoard + 1, (int)yBoard + 1);
     }
@@ -136,14 +145,9 @@ public class PieceController : MonoBehaviour
                 MovePlateSpawn(x, y);
             }
 
-            if (sc.PositionOnBoard(x+1,y) && sc.GetPosition(x+1,y) != null && sc.GetPosition(x+1,y).GetComponent<PieceController>().player != player)
+            else if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && sc.GetPosition(x, y).GetComponent<PieceController>().player != player)
             {
-                MovePlateAttackSpawn(x + 1, y);
-            }
-
-            if (sc.PositionOnBoard(x - 1, y) && sc.GetPosition(x - 1, y) != null && sc.GetPosition(x - 1, y).GetComponent<PieceController>().player != player)
-            {
-                MovePlateAttackSpawn(x - 1, y);
+                MovePlateAttackSpawn(x, y);
             }
         }
     }
@@ -159,7 +163,7 @@ public class PieceController : MonoBehaviour
 
         switch (y)
         {
-            case 0: x = -4.2f; break;
+            case 0: y = -4.2f; break;
             case 1: y = -2.8f; break;
             case 2: y = -1.4f; break;
             case 3: y = 0f; break;
@@ -170,36 +174,39 @@ public class PieceController : MonoBehaviour
 
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
 
-        NewBehaviourScript mpScript = mp.GetComponent<NewBehaviourScript>();
+        MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);
     }
 
     public void MovePlateAttackSpawn(int matrixX, int matrixY)
     {
+
         float x = matrixX;
         float y = matrixY;
 
         x *= 1f;
         y *= 1f;
 
-        switch (x)
+        x *= 1.4f;
+        x += -7.2f;
+
+        if (y == 7) y = 6;
+
+        switch (y)
         {
-            case 0f: x = -7.2f; break;
-            case 1f: x = -5.8f; break;
-            case 2f: x = -4.4f; break;
-            case 3f: x = -2.95f; break;
-            case 4f: x = -1.55f; break;
-            case 5f: x = -0.15f; break;
-            case 6f: x = 1.25f; break;
+            case 0: y = -4.2f; break;
+            case 1: y = -2.8f; break;
+            case 2: y = -1.4f; break;
+            case 3: y = 0f; break;
+            case 4: y = 1.4f; break;
+            case 5: y = 2.8f; break;
+            case 6: y = 4.2f; break;
         }
 
-        if (y == 0) y += -4.25f;
-        if (y == 7) y += -2.85f;
-
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
-
-        NewBehaviourScript mpScript = mp.GetComponent<NewBehaviourScript>();
+        mp.GetComponent<Renderer>().material.color = new Color(255, 0, 0);
+        MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.attack = true;
         mpScript.SetReference(gameObject);
         mpScript.SetCoords(matrixX, matrixY);

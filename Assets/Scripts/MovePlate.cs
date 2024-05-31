@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class MovePlate : MonoBehaviour
 {
     public GameObject controller;
 
-    GameObject createdByPiece = null;
+    GameObject createdByPiece;
 
     int matrixX;
     int matrixY;
@@ -28,10 +28,11 @@ public class NewBehaviourScript : MonoBehaviour
 
         if (attack)
         {
-            // Ovde ide funkcionalnost za napadanje
+            GameObject gm = controller.GetComponent<GameScript>().GetPosition(matrixX, matrixY);
+            Destroy(gm);
         }
 
-        controller.GetComponent<GameScript>().SetPositionEmpty((int) createdByPiece.GetComponent<PieceController>().xBoard, (int) createdByPiece.GetComponent<PieceController>().yBoard);
+        controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
 
         createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
         createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
@@ -51,7 +52,7 @@ public class NewBehaviourScript : MonoBehaviour
 
     public void SetReference(GameObject obj)
     {
-        controller = obj;
+        createdByPiece = obj;
     }
 
     public GameObject GetReference() {
