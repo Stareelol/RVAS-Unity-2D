@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1301629217432705146}
   - component: {fileID: 6737386884935962464}
   - component: {fileID: 7027828149509163676}
+  - component: {fileID: -221065621379250412}
   m_Layer: 0
   m_Name: ChessPiece
   m_TagString: Untagged
@@ -98,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
-  movePlate: {fileID: 0}
+  movePlate: {fileID: 7622234621568224208, guid: 143a4a734391b2b478018dcdc8f28461, type: 3}
   xBoard: -1
   yBoard: -1
   black_king: {fileID: 21300000, guid: 8622afff79ea467489e1c9dd42ba6d4c, type: 3}
@@ -107,3 +108,48 @@ MonoBehaviour:
   white_king: {fileID: 21300000, guid: d4320efdd3706dd49aad3dc01d604604, type: 3}
   white_knight: {fileID: 21300000, guid: 577bc9bdb97f22a4f91ad42c584a23e9, type: 3}
   white_pawn: {fileID: 21300000, guid: c7f77c55eaddfd84e8d76bf9ae20adde, type: 3}
+--- !u!61 &-221065621379250412
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2634866849203576169}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1.28, y: 1.28}
+    newSize: {x: 1.28, y: 1.28}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 1.28, y: 1.28}
+  m_EdgeRadius: 0

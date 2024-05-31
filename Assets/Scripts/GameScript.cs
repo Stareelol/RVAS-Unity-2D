@@ -18,7 +18,7 @@ public class GameScript : MonoBehaviour
 
     // Start is called before the first frame update
 
-    
+
     void Start()
     {
         playerWhite = new GameObject[] {
@@ -64,9 +64,14 @@ public class GameScript : MonoBehaviour
         positions[x, y] = null;
     }
 
+    public GameObject GetPosition(int x, int y)
+    {
+        return positions[x, y];
+;    }
+
     public bool PositionOnBoard(int x, int y)
     {
-        if (x < 0 || y < 0 || x >= positions.GetLength(0) || y >= positions.GetLength(1)) return false;
+        if (x < 0 || y < 0 || x >= positions.GetLength(0) - 1 || y >= positions.GetLength(1)) return false;
         return true;
     }
    

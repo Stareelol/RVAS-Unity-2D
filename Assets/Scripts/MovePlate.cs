@@ -35,6 +35,7 @@ public class NewBehaviourScript : MonoBehaviour
 
         createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
         createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
+
         createdByPiece.GetComponent<PieceController>().SetCoords();
 
         controller.GetComponent<GameScript>().SetPosition(createdByPiece);
