@@ -12,9 +12,9 @@ public class GameScript : MonoBehaviour
     private GameObject[] playerBlack  = new GameObject[7];
     private GameObject[] playerWhite = new GameObject[7];
 
-    //private string currentPlayer = "white";
+    private string currentPlayer = "white";
 
-    //private bool gameOver = false;
+    private bool gameOver = false;
 
     // Start is called before the first frame update
 
@@ -75,4 +75,24 @@ public class GameScript : MonoBehaviour
         return true;
     }
 
+    public string GetCurrentPlayer()
+    {
+        return currentPlayer;
+    }
+
+    public bool IsGameOver()
+    {
+        return gameOver;
+    }
+
+    public void NextTurn()
+    {
+        if (currentPlayer == "white") currentPlayer = "black";
+        else currentPlayer = "white";
+    }
+
+    public void Update()
+    {
+        if (gameOver == true)gameOver = false;
+    }
 }

@@ -41,6 +41,8 @@ public class MovePlate : MonoBehaviour
 
         controller.GetComponent<GameScript>().SetPosition(createdByPiece);
 
+        controller.GetComponent<GameScript>().NextTurn();
+
         createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
     }
 

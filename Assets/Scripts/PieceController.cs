@@ -58,8 +58,12 @@ public class PieceController : MonoBehaviour
 
     private void OnMouseUp()
     {
-        DestroyMovePlates();
-        InitiateMovePlates();
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        if( controller.GetComponent<GameScript>().GetCurrentPlayer() == player)
+        {
+            DestroyMovePlates();
+            InitiateMovePlates();
+        }
     }
 
     public void DestroyMovePlates()
@@ -123,7 +127,7 @@ public class PieceController : MonoBehaviour
     {
         GameScript sc  = controller.GetComponent<GameScript>();
         if (sc.PositionOnBoard(x, y)) {
-            GameObject cp = sc.GetPosition(x, y);
+        GameObject cp = sc.GetPosition(x, y);
 
             if (cp == null) 
             {
