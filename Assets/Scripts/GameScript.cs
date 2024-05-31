@@ -8,7 +8,7 @@ public class GameScript : MonoBehaviour
 
     public GameObject chesspiece;
 
-    private GameObject[,] positions = new GameObject[7, 7];
+    private GameObject[,] positions = new GameObject[8,8];
     private GameObject[] playerBlack  = new GameObject[7];
     private GameObject[] playerWhite = new GameObject[7];
 
@@ -55,7 +55,7 @@ public class GameScript : MonoBehaviour
     {
         PieceController controller = obj.GetComponent<PieceController>();
 
-        positions[controller.xBoard, controller.yBoard] = obj;
+        positions[(int) controller.xBoard, (int) controller.yBoard] = obj;
 
     }
    

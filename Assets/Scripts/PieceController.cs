@@ -7,8 +7,8 @@ public class PieceController : MonoBehaviour
     public GameObject controller;
     public GameObject movePlate;
 
-    public int xBoard = -1;
-    public int yBoard = -1;
+    public float xBoard = -1f;
+    public float yBoard = -1f;
 
     private string player;
 
@@ -40,8 +40,19 @@ public class PieceController : MonoBehaviour
         x *= 1f;
         y *= 1f;
 
-        x += -5f;
-        y += -5f;
+        switch (x)
+        {
+            case 0f: x = -7.2f;break;
+            case 1f: x = -5.8f;break;
+            case 2f: x = -4.4f;break;
+            case 3f: x = -2.95f;break;
+            case 4f: x = -1.55f;break;
+            case 5f: x = -0.15f;break;
+            case 6f: x = 1.25f;break;
+        }
+
+        if (y==0) y += -4.25f;
+        if (y == 7) y += -2.85f;
 
         this.transform.position = new Vector3(x, y, -1.0f);
     }
