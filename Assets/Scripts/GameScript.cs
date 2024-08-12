@@ -8,13 +8,11 @@ using MySql.Data.MySqlClient;
 public class GameScript : MonoBehaviour
 {
 
-    private string connectionString;
-
     public GameObject chesspiece;
 
-    private GameObject[,] positions = new GameObject[7,7];
-    private GameObject[] playerBlack  = new GameObject[7];
-    private GameObject[] playerWhite = new GameObject[7];
+    private GameObject[,] positions = new GameObject[8,8];
+    private GameObject[] playerBlack  = new GameObject[8];
+    private GameObject[] playerWhite = new GameObject[8];
 
     private GameObject black_king;
     private GameObject white_king;
@@ -23,26 +21,34 @@ public class GameScript : MonoBehaviour
 
     private bool gameOver = false;
 
-    // Start is called before the first frame update
-
 
     void Start()
     {
-        connectionString = "Server=localhost;Database=game_db;User ID=root;Pooling=false;";
 
         playerWhite = new GameObject[] {
-            Create("white_pawn",0,0), Create("white_pawn",1,0), Create("white_knight",2,0), Create("white_king",3,0), Create("white_knight",4,0), Create("white_pawn",5,0), Create("white_pawn",6,0)
+            // classical chess
+            //Create("white_rook", 0, 0), Create("white_knight", 1, 0), Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0), Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0), Create("white_pawn", 0, 1), Create("white_pawn", 1, 1), Create("white_pawn", 2, 1), Create("white_pawn", 3, 1), Create("white_pawn", 4, 1), Create("white_pawn", 5, 1), Create("white_pawn", 6, 1), Create("white_pawn",7, 1)
+            
+            Create("white_king", 0, 3),Create("white_rook",1,4)
         };
 
         playerBlack = new GameObject[] {
-            Create("black_pawn",0,6), Create("black_pawn",1,6), Create("black_knight",2,6), Create("black_king",3,6), Create("black_knight",4,6), Create("black_pawn",5,6), Create("black_pawn",6,6)
+            // clasical chess
+            //Create("black_rook", 0, 7), Create("black_knight", 1, 7), Create("black_bishop", 2, 7), Create("black_king", 3, 7), Create("black_queen", 4, 7), Create("black_bishop", 5, 7), Create("black_knight", 6, 7), Create("black_rook", 7, 7), Create("black_pawn", 0, 6), Create("black_pawn", 1, 6), Create("black_pawn", 2, 6), Create("black_pawn", 3, 6), Create("black_pawn", 4, 6), Create("black_pawn", 5, 6), Create("black_pawn", 6, 6), Create("black_pawn",7, 6)
+            
+            // testing positions
+            
         };
 
         for (int i = 0; i < playerBlack.Length; i++)
         {
             SetPosition(playerBlack[i]);
+        }
+
+        for (int i = 0; i < playerWhite.Length; i++)
+        {
             SetPosition(playerWhite[i]);
-        } 
+        }
     }
 
     public GameObject Create(string name, int x, int y) 
@@ -62,7 +68,7 @@ public class GameScript : MonoBehaviour
     {
         PieceController controller = obj.GetComponent<PieceController>();
 
-        positions[(int) controller.xBoard, (int) controller.yBoard] = obj;
+        positions[controller.xBoard, controller.yBoard] = obj;
 
     }
 
@@ -103,41 +109,19 @@ public class GameScript : MonoBehaviour
         black_king = GameObject.Find("black_king");
         white_king = GameObject.Find("white_king");
 
-        if (black_king == null)
-        {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-                using (MySqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "UPDATE users SET wins = wins + 1 WHERE username = @username";
-                    command.Parameters.AddWithValue("@username", DatabaseConnector.currentPlayer);
-                    command.ExecuteNonQuery();
-                }
-                connection.Close();
-            }
-            gameOver = true;
-        }
-        if (white_king == null)
-        {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                connection.Open();
-                using (MySqlCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "UPDATE users SET losses = losses + 1 WHERE username = @username";
-                    command.Parameters.AddWithValue("@username", DatabaseConnector.currentPlayer);
-                    command.ExecuteNonQuery();
-                }
-                connection.Close();
-            }
-            gameOver = true;
-        }
+        //if (black_king == null)
+        //{
+        //    gameOver = true;
+        //}
+        //if (white_king == null)
+        //{
+        //    gameOver = true;
+        //}
 
-        if (gameOver == true)
-        {
-            SceneManager.LoadScene("Main Menu");
-            gameOver = false;
-        }
+        //if (gameOver == true)
+        //{
+        //    SceneManager.LoadScene("Main Menu");
+        //    gameOver = false;
+        //}
     }
 }

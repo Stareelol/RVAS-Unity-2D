@@ -40,60 +40,11 @@ public class MovePlate : MonoBehaviour
 
         if (attack)
         {
-            // handle attacks
             GameObject defender = controller.GetComponent<GameScript>().GetPosition(matrixX, matrixY);
 
-            defender.GetComponent<PieceController>().health -= createdByPiece.GetComponent<PieceController>().attack;
-            createdByPiece.GetComponent<PieceController>().health -= defender.GetComponent<PieceController>().attack;
+            Destroy(defender);
 
-            if (defender.GetComponent<PieceController>().health <= 0)
-            {
-                Destroy(defender);
-
-                capture.Play(0);
-
-                if (createdByPiece.GetComponent<PieceController>().health <= 0) Destroy(createdByPiece);
-
-                controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
-
-                createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
-                createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
-
-                createdByPiece.GetComponent<PieceController>().SetCoords();
-
-                controller.GetComponent<GameScript>().SetPosition(createdByPiece);
-
-                controller.GetComponent<GameScript>().NextTurn();
-
-                createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
-
-                return;
-            }
-            else if (createdByPiece.GetComponent<PieceController>().health <= 0)
-            {
-                Destroy(createdByPiece);
-                capture.Play(0);
-                controller.GetComponent<GameScript>().NextTurn();
-                createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
-            }
-            else if (createdByPiece.GetComponent<PieceController>().health <= 0 && defender.GetComponent<PieceController>().health <= 0)
-            {
-                Destroy(defender);
-                Destroy(createdByPiece);
-                capture.Play(0);
-                controller.GetComponent<GameScript>().NextTurn();
-                createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
-            }
-            else
-            {
-                controller.GetComponent<GameScript>().NextTurn();
-                createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
-                move.Play(0);
-            }
-        }
-        else {
-
-            move.Play(0);
+            capture.Play(0);
 
             controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
 
@@ -108,7 +59,42 @@ public class MovePlate : MonoBehaviour
 
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
-        
+
+        else
+        {
+            move.Play(0);
+
+            controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
+
+            createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
+            createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
+
+            createdByPiece.GetComponent<PieceController>().SetCoords();
+
+            controller.GetComponent<GameScript>().SetPosition(createdByPiece);
+
+            CheckPromotion();
+
+            //controller.GetComponent<GameScript>().NextTurn();
+
+            createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
+        }
+
+    }
+
+    public void CheckPromotion()
+    {
+        if (createdByPiece.name == "white_pawn" && createdByPiece.GetComponent<PieceController>().yBoard == 7)
+        {
+            controller.GetComponent<GameScript>().Create("white_queen", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+            Destroy(createdByPiece);
+        }
+
+        if (createdByPiece.name == "black_pawn" && createdByPiece.GetComponent<PieceController>().yBoard == 0)
+        {
+            controller.GetComponent<GameScript>().Create("black_queen", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+            Destroy(createdByPiece);
+        }
     }
 
     public void SetCoords(int x, int y)
