@@ -185,10 +185,15 @@ public class PieceController : MonoBehaviour
         PointMovePlate(xBoard + 1, yBoard);
         PointMovePlate(xBoard + 1, yBoard + 1);
 
-        // if (sc.GetPosition(xBoard + 1,yBoard)
+        if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard)!=null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
+         {
+            PointMovePlate(xBoard + 2, yBoard);
+         };
 
-
-
+        if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
+        {
+            PointMovePlate(xBoard - 2, yBoard);
+        }
     }
 
     public void PointMovePlate(int x, int y)

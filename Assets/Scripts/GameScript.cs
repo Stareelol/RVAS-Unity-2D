@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using MySql.Data.MySqlClient;
 
 public class GameScript : MonoBehaviour
 {
@@ -11,44 +6,70 @@ public class GameScript : MonoBehaviour
     public GameObject chesspiece;
 
     private GameObject[,] positions = new GameObject[8,8];
-    private GameObject[] playerBlack  = new GameObject[8];
-    private GameObject[] playerWhite = new GameObject[8];
+    private GameObject[] playerBlack  = new GameObject[16];
+    private GameObject[] playerWhite = new GameObject[16];
 
     private GameObject black_king;
     private GameObject white_king;
+
+    public int index_black = 0;
+    public int index_white = 0;
 
     private string currentPlayer = "white";
 
     private bool gameOver = false;
 
 
+    public void FENtoPosition(string FEN)
+    {
+        int row = 7;
+        int column = 0;
+        int count = 0;
+
+        foreach(char c in FEN)
+        {
+            switch (c)
+            {
+                    case 'r': { playerBlack[index_black] = Create("black_rook", column, row); index_black++; }; break;
+                    case 'n': { playerBlack[index_black] = Create("black_knight", column, row); index_black++; }; break;
+                    case 'b': { playerBlack[index_black] = Create("black_bishop", column, row); index_black++; }; break;
+                    case 'q': { playerBlack[index_black] = Create("black_queen", column, row); index_black++; }; break;
+                    case 'k': { playerBlack[index_black] = Create("black_king", column, row); index_black++; }; break;
+                    case 'p': { playerBlack[index_black] = Create("black_pawn", column, row); index_black++; }; break;
+                    case 'R': { playerWhite[index_white] = Create("white_rook", column, row); index_white++; }; break;
+                    case 'N': { playerWhite[index_white] = Create("white_knight", column, row); index_white++; }; break;
+                    case 'B': { playerWhite[index_white] = Create("white_bishop", column, row); index_white++; }; break;
+                    case 'Q': { playerWhite[index_white] = Create("white_queen", column, row); index_white++; }; break;
+                    case 'K': { playerWhite[index_white] = Create("white_king", column, row);  index_white++; }; break;
+                    case 'P': { playerWhite[index_white] = Create("white_pawn", column, row);  index_white++; }; break;
+                    case '/': { row--; column = 0;count++; } ;break;
+                default: {
+                        //c.ToString();
+                        int num = c - '0';
+                        column += num - 1;
+                        }
+                    break;
+            }
+            if (c!='/')column++;
+            //if ()
+        }
+    }
+
     void Start()
     {
+        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); 
+        //FENtoPosition("4k2r/6r1/8/8/8/8/3R4/R3K3");
 
-        playerWhite = new GameObject[] {
-            // classical chess
-            //Create("white_rook", 0, 0), Create("white_knight", 1, 0), Create("white_bishop", 2, 0), Create("white_queen", 3, 0), Create("white_king", 4, 0), Create("white_bishop", 5, 0), Create("white_knight", 6, 0), Create("white_rook", 7, 0), Create("white_pawn", 0, 1), Create("white_pawn", 1, 1), Create("white_pawn", 2, 1), Create("white_pawn", 3, 1), Create("white_pawn", 4, 1), Create("white_pawn", 5, 1), Create("white_pawn", 6, 1), Create("white_pawn",7, 1)
-            
-            Create("white_king", 0, 3),Create("white_rook",1,4)
-        };
-
-        playerBlack = new GameObject[] {
-            // clasical chess
-            //Create("black_rook", 0, 7), Create("black_knight", 1, 7), Create("black_bishop", 2, 7), Create("black_king", 3, 7), Create("black_queen", 4, 7), Create("black_bishop", 5, 7), Create("black_knight", 6, 7), Create("black_rook", 7, 7), Create("black_pawn", 0, 6), Create("black_pawn", 1, 6), Create("black_pawn", 2, 6), Create("black_pawn", 3, 6), Create("black_pawn", 4, 6), Create("black_pawn", 5, 6), Create("black_pawn", 6, 6), Create("black_pawn",7, 6)
-            
-            // testing positions
-            
-        };
-
-        for (int i = 0; i < playerBlack.Length; i++)
+        for (int i = 0; i < index_black; i++)
         {
             SetPosition(playerBlack[i]);
         }
 
-        for (int i = 0; i < playerWhite.Length; i++)
+        for (int i = 0; i < index_white; i++)
         {
             SetPosition(playerWhite[i]);
         }
+
     }
 
     public GameObject Create(string name, int x, int y) 
