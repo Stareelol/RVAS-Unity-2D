@@ -12,6 +12,15 @@ public class GameScript : MonoBehaviour
     private GameObject black_king;
     private GameObject white_king;
 
+    public bool WhiteCastleQueenAllowed = false;
+    public bool WhiteCastleKingAllowed = false;
+    public bool BlackCastleQueenAllowed = false;
+    public bool BlackCastleKingAllowed = false;
+
+    public string EnPassantSquare = "-";
+    public int halfmoveCount = 0;
+    public int fullmoveCount = 0;
+
     public int index_black = 0;
     public int index_white = 0;
 
@@ -26,7 +35,9 @@ public class GameScript : MonoBehaviour
         int column = 0;
         int count = 0;
 
-        foreach(char c in FEN)
+        string[] split = FEN.Split(' ');
+
+        foreach(char c in split[0])
         {
             switch (c)
             {
@@ -44,21 +55,48 @@ public class GameScript : MonoBehaviour
                     case 'P': { playerWhite[index_white] = Create("white_pawn", column, row);  index_white++; }; break;
                     case '/': { row--; column = 0;count++; } ;break;
                 default: {
-                        //c.ToString();
                         int num = c - '0';
                         column += num - 1;
                         }
                     break;
             }
             if (c!='/')column++;
-            //if ()
         }
+
+        if (FEN == "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR") // only default position has no extra perms
+        {
+            WhiteCastleQueenAllowed = true;
+            WhiteCastleKingAllowed = true;
+            BlackCastleQueenAllowed = true;
+            BlackCastleKingAllowed = true;
+            return;
+        }
+
+        if (split[1] == "w") currentPlayer = "white";
+        else if (split[1] == "b") currentPlayer = "black";
+
+        foreach (char c in split[2])
+        {
+            switch (c)
+            {
+                case 'K':WhiteCastleKingAllowed = true;break;
+                case 'Q':WhiteCastleQueenAllowed = true;break;
+                case 'k':BlackCastleKingAllowed = true;break;
+                case 'q':BlackCastleQueenAllowed = true;break;
+            }
+        }
+
+        EnPassantSquare = split[3];
+        halfmoveCount = int.Parse(split[4]);
+        fullmoveCount = int.Parse(split[5]);
+
+        
     }
 
     void Start()
     {
-        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); 
-        //FENtoPosition("4k2r/6r1/8/8/8/8/3R4/R3K3");
+        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); //starting pos
+        //FENtoPosition("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 ");
 
         for (int i = 0; i < index_black; i++)
         {
