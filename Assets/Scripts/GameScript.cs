@@ -28,7 +28,6 @@ public class GameScript : MonoBehaviour
 
     private bool gameOver = false;
 
-
     public void FENtoPosition(string FEN)
     {
         int row = 7;
@@ -95,8 +94,8 @@ public class GameScript : MonoBehaviour
 
     void Start()
     {
-        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); //starting pos
-        //FENtoPosition("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2 ");
+        //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); //starting pos
+        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2 ");
 
         for (int i = 0; i < index_black; i++)
         {

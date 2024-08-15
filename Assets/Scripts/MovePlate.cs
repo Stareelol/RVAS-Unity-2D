@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MovePlate : MonoBehaviour
@@ -37,25 +34,26 @@ public class MovePlate : MonoBehaviour
     public void OnMouseUp()
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
 
         if (attack)
         {
-            GameObject defender = controller.GetComponent<GameScript>().GetPosition(matrixX, matrixY);
+            GameObject defender = gs.GetPosition(matrixX, matrixY);
 
             Destroy(defender);
 
             capture.Play(0);
 
-            controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
+            gs.SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
 
             createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
             createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
 
             createdByPiece.GetComponent<PieceController>().SetCoords();
 
-            controller.GetComponent<GameScript>().SetPosition(createdByPiece);
+            gs.SetPosition(createdByPiece);
 
-            controller.GetComponent<GameScript>().NextTurn();
+            gs.NextTurn();
 
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
@@ -64,24 +62,59 @@ public class MovePlate : MonoBehaviour
         {
             move.Play(0);
 
-            controller.GetComponent<GameScript>().SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
+            CheckEnPassant();
 
+            if (createdByPiece.GetComponent<PieceController>().name == "white_pawn" || createdByPiece.GetComponent<PieceController>().name == "black_pawn") SetEnPassantSquare();
+            else gs.GetComponent<GameScript>().EnPassantSquare = " ";
+
+            gs.SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
             createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
             createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
-
             createdByPiece.GetComponent<PieceController>().SetCoords();
-
-            controller.GetComponent<GameScript>().SetPosition(createdByPiece);
+            gs.SetPosition(createdByPiece);
 
             CheckPromotion();
             CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
-            controller.GetComponent<GameScript>().NextTurn();
-
+            gs.NextTurn();
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
 
+    }
+
+    public void CheckEnPassant()
+    {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+
+        string[] ep = null;
+        if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
+        if (ep != null)
+        {
+            if ((matrixX - int.Parse(ep[0])) == 0 && Mathf.Abs(matrixY - int.Parse(ep[1])) == 1)
+            {
+                Destroy(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
+                gs.SetPositionEmpty(int.Parse(ep[0]), int.Parse(ep[1]));
+            }
+        }
+
+    }
+    public void SetEnPassantSquare()
+    {
+
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+
+        int previousX = createdByPiece.GetComponent<PieceController>().xBoard;
+        int previousY = createdByPiece.GetComponent<PieceController>().yBoard;
+
+        if (Mathf.Abs((matrixY - previousY)) == 2 && matrixX == previousX)
+        {
+            gs.EnPassantSquare = matrixX.ToString() + " " + matrixY.ToString();
+        }
+
+        else gs.GetComponent<GameScript>().EnPassantSquare = " ";
     }
 
     public void CheckPromotion() // PROMOTION DOES NOT WORK BECAUSE THERE IS NO SET POS

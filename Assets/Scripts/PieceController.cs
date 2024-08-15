@@ -69,6 +69,23 @@ public class PieceController : MonoBehaviour
         this.transform.position = new Vector3(x, y, -1.0f);
     }
 
+    public void GenerateLegalMoves()
+    {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+
+        //List<GameObject> gameObjects = new List<GameObject>();
+
+        for (int i = 0; i < 7; i++)
+            for (int j = 0; j < 7; j++)
+            {
+                if (gs.GetPosition(i,j) != null)
+                {
+                    //
+                }
+            }
+    }
+
     private void OnMouseUp()
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
@@ -77,6 +94,7 @@ public class PieceController : MonoBehaviour
             DestroyMovePlates();
             InitiateMovePlates();
         }
+        
     }
 
     public void DestroyMovePlates()
@@ -89,6 +107,12 @@ public class PieceController : MonoBehaviour
     }
 
     public void InitiateMovePlates() {
+
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+
+        string[] ep = null;
+
         switch (this.name)
         {
             case "black_rook":
@@ -129,12 +153,36 @@ public class PieceController : MonoBehaviour
                 if (yBoard == 6) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard - 1);
                 PawnAttackMovePlate(xBoard + 1, yBoard - 1);
+                ep = null;
+                if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
+                if (ep != null)
+                {
+                    int epX = int.Parse(ep[0]);
+                    int epY = int.Parse(ep[1]);
+                    if (epY == yBoard)
+                    {
+                        if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard - 1);
+                        else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard - 1);
+                    }
+                }
                 break;
             case "white_pawn":
                 PawnMovePlate(xBoard,  yBoard + 1);
                 if (yBoard == 1) PawnMovePlate(xBoard,  yBoard + 2); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard + 1);
                 PawnAttackMovePlate(xBoard + 1, yBoard + 1);
+                ep = null;
+                if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
+                if (ep != null)
+                {
+                    int epX = int.Parse(ep[0]);
+                    int epY = int.Parse(ep[1]);
+                    if (epY == yBoard)
+                    {
+                        if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard + 1);
+                        else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard + 1);
+                    }
+                }
                 break;
         }
     }
