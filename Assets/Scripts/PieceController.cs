@@ -12,7 +12,7 @@ public class PieceController : MonoBehaviour
     public int xBoard = -1;
     public int yBoard = -1;
 
-    private string player;
+    public string player;
 
     public Sprite black_king, black_knight, black_pawn, black_bishop, black_queen, black_rook;
     public Sprite white_king, white_knight, white_pawn, white_bishop, white_queen, white_rook;

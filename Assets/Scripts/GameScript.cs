@@ -94,8 +94,9 @@ public class GameScript : MonoBehaviour
 
     void Start()
     {
-        //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"); //starting pos
-        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2 ");
+        //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2 ");
+        FENtoPosition("rnbqkbnr/ppppppp1/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2 ");
+        //FENtoPosition("4k3/8/8/8/8/8/8/4K2R w K - 0 1");
 
         for (int i = 0; i < index_black; i++)
         {
@@ -106,6 +107,8 @@ public class GameScript : MonoBehaviour
         {
             SetPosition(playerWhite[i]);
         }
+
+        //this.GetComponent<CalculateAllMoves>().Calculate();
 
     }
 

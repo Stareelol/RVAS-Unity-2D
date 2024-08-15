@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO;
 
 public class MovePlate : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class MovePlate : MonoBehaviour
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
 
         if (attack)
         {
@@ -44,7 +46,7 @@ public class MovePlate : MonoBehaviour
 
             capture.Play(0);
 
-            gs.SetPositionEmpty((int)createdByPiece.GetComponent<PieceController>().xBoard, (int)createdByPiece.GetComponent<PieceController>().yBoard);
+            gs.SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
 
             createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
             createdByPiece.GetComponent<PieceController>().yBoard = matrixY;
@@ -52,6 +54,8 @@ public class MovePlate : MonoBehaviour
             createdByPiece.GetComponent<PieceController>().SetCoords();
 
             gs.SetPosition(createdByPiece);
+
+            cam.Calculate(gs.GetCurrentPlayer());
 
             gs.NextTurn();
 
@@ -77,6 +81,8 @@ public class MovePlate : MonoBehaviour
             CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
+
+            cam.Calculate(gs.GetCurrentPlayer());
             gs.NextTurn();
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
@@ -155,6 +161,7 @@ public class MovePlate : MonoBehaviour
         controller.GetComponent<GameScript>().SetPositionEmpty(7,0);
         GameObject created = controller.GetComponent<GameScript>().Create("white_rook", 5,0);
         controller.GetComponent<GameScript>().SetPosition(created);
+        controller.GetComponent<GameScript>().WhiteCastleKingAllowed = false;
     }
 
     public void CastleBlackShort()
@@ -163,6 +170,7 @@ public class MovePlate : MonoBehaviour
         controller.GetComponent<GameScript>().SetPositionEmpty(7, 7);
         GameObject created = controller.GetComponent<GameScript>().Create("black_rook", 5, 7);
         controller.GetComponent<GameScript>().SetPosition(created);
+        controller.GetComponent<GameScript>().BlackCastleKingAllowed = false;
     }
 
     public void CastleWhiteLong()
@@ -171,6 +179,7 @@ public class MovePlate : MonoBehaviour
         controller.GetComponent<GameScript>().SetPositionEmpty(0, 0);
         GameObject createdRook = controller.GetComponent<GameScript>().Create("white_rook", 3, 0);
         controller.GetComponent<GameScript>().SetPosition(createdRook);
+        controller.GetComponent<GameScript>().WhiteCastleQueenAllowed = false;
     }
 
     public void CastleBlackLong()
@@ -179,6 +188,7 @@ public class MovePlate : MonoBehaviour
         controller.GetComponent<GameScript>().SetPositionEmpty(0, 7);
         GameObject createdRook = controller.GetComponent<GameScript>().Create("black_rook", 3, 7);
         controller.GetComponent<GameScript>().SetPosition(createdRook);
+        controller.GetComponent<GameScript>().BlackCastleQueenAllowed = false;
     }
 
     public void SetCoords(int x, int y)
