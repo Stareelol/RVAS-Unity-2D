@@ -95,8 +95,7 @@ public class GameScript : MonoBehaviour
     void Start()
     {
         //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2 ");
-        FENtoPosition("rnbqkbnr/ppppppp1/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 1 2 ");
-        //FENtoPosition("4k3/8/8/8/8/8/8/4K2R w K - 0 1");
+        FENtoPosition("8/8/8/3k4/8/3Q4/8/8 w K - 0 1");
 
         for (int i = 0; i < index_black; i++)
         {

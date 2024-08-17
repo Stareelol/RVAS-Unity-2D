@@ -56,6 +56,7 @@ public class MovePlate : MonoBehaviour
             gs.SetPosition(createdByPiece);
 
             cam.Calculate(gs.GetCurrentPlayer());
+            cam.AddMovesToList();
 
             gs.NextTurn();
 
@@ -66,10 +67,12 @@ public class MovePlate : MonoBehaviour
         {
             move.Play(0);
 
-            CheckEnPassant();
-
-            if (createdByPiece.GetComponent<PieceController>().name == "white_pawn" || createdByPiece.GetComponent<PieceController>().name == "black_pawn") SetEnPassantSquare();
-            else gs.GetComponent<GameScript>().EnPassantSquare = " ";
+            //if (createdByPiece.GetComponent<PieceController>().name == "white_pawn" || createdByPiece.GetComponent<PieceController>().name == "black_pawn")
+            //{
+            //    SetEnPassantSquare();
+            //    CheckEnPassant();
+            //}
+            //else gs.GetComponent<GameScript>().EnPassantSquare = " ";
 
             gs.SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
             createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
@@ -83,6 +86,7 @@ public class MovePlate : MonoBehaviour
 
 
             cam.Calculate(gs.GetCurrentPlayer());
+            cam.AddMovesToList();
             gs.NextTurn();
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
@@ -98,13 +102,40 @@ public class MovePlate : MonoBehaviour
         if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
         if (ep != null)
         {
+            Debug.Log(gs.GetPosition(matrixX, matrixY));
             if ((matrixX - int.Parse(ep[0])) == 0 && Mathf.Abs(matrixY - int.Parse(ep[1])) == 1)
             {
-                Destroy(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
-                gs.SetPositionEmpty(int.Parse(ep[0]), int.Parse(ep[1]));
+                if (CheckEndCase(matrixX, matrixY, int.Parse(ep[0]), int.Parse(ep[1])) != true)
+                {
+                    Destroy(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
+                    gs.SetPositionEmpty(int.Parse(ep[0]), int.Parse(ep[1]));
+                }
             }
         }
 
+    }
+
+    public bool CheckEndCase(int playX, int playY, int compX, int compY) {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+        //Debug.Log(playX + ", " + playY + ", " + compX + ", " + compY);
+        Debug.Log(gs.GetPosition(playX, playY));
+        Debug.Log(gs.GetPosition(compX, compY));
+        if (gs.PositionOnBoard(playX, playY) && gs.PositionOnBoard(compX, compY) && gs.GetPosition(playX, playY) != null && gs.GetPosition(compX, compY)!= null)
+        {
+            Debug.Log("here!");
+            if (gs.GetPosition(playX, playY).name == "black_pawn" && gs.GetPosition(compX, compY).name == "white_pawn")
+            {
+                Debug.Log("hereB!");
+                if ((playY - compY) == 1) return true;
+            }
+            if (gs.GetPosition(playX, playY).name == "white_pawn" && gs.GetPosition(compX, compY).name == "black_pawn")
+            {
+                Debug.Log("hereW!");
+                if ((playY - compY) == -1) return true;
+            }
+        }
+        return false;
     }
     public void SetEnPassantSquare()
     {

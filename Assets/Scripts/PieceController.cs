@@ -111,8 +111,6 @@ public class PieceController : MonoBehaviour
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
 
-        string[] ep = null;
-
         switch (this.name)
         {
             case "black_rook":
@@ -153,37 +151,34 @@ public class PieceController : MonoBehaviour
                 if (yBoard == 6) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard - 1);
                 PawnAttackMovePlate(xBoard + 1, yBoard - 1);
-                ep = null;
-                if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
-                if (ep != null)
-                {
-                    int epX = int.Parse(ep[0]);
-                    int epY = int.Parse(ep[1]);
-                    if (epY == yBoard)
-                    {
-                        if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard - 1);
-                        else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard - 1);
-                    }
-                }
+                //EnPassantMovePlate();
                 break;
             case "white_pawn":
                 PawnMovePlate(xBoard,  yBoard + 1);
                 if (yBoard == 1) PawnMovePlate(xBoard,  yBoard + 2); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard + 1);
                 PawnAttackMovePlate(xBoard + 1, yBoard + 1);
-                ep = null;
-                if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
-                if (ep != null)
-                {
-                    int epX = int.Parse(ep[0]);
-                    int epY = int.Parse(ep[1]);
-                    if (epY == yBoard)
-                    {
-                        if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard + 1);
-                        else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard + 1);
-                    }
-                }
+                //EnPassantMovePlate();
                 break;
+        }
+    }
+
+    public void EnPassantMovePlate()
+    {
+        string[] ep = null;
+        ep = null;
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+        if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
+        if (ep != null)
+        {
+            int epX = int.Parse(ep[0]);
+            int epY = int.Parse(ep[1]);
+            if (epY == yBoard)
+            {
+                if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard + 1);
+                else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard + 1);
+            }
         }
     }
 
@@ -235,46 +230,52 @@ public class PieceController : MonoBehaviour
 
         if (sc.GetCurrentPlayer() == "white" && sc.WhiteCastleKingAllowed == true)
         {
-            if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
-            {
-                PointMovePlate(xBoard + 2, yBoard);
-            };
+            if (sc.PositionOnBoard(xBoard + 1, yBoard) && sc.PositionOnBoard(xBoard + 2, yBoard) && sc.PositionOnBoard(xBoard + 3, yBoard))
+                if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
+                {
+                    PointMovePlate(xBoard + 2, yBoard);
+                };
         }
 
         if (sc.GetCurrentPlayer() == "black" && sc.BlackCastleKingAllowed == true)
         {
-            if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
-            {
-                PointMovePlate(xBoard + 2, yBoard);
-            };
+            if (sc.PositionOnBoard(xBoard + 1, yBoard) && sc.PositionOnBoard(xBoard + 2, yBoard) && sc.PositionOnBoard(xBoard + 3, yBoard))
+                if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
+                {
+                    PointMovePlate(xBoard + 2, yBoard);
+                };
         }
 
         if (sc.GetCurrentPlayer() == "white" && sc.WhiteCastleQueenAllowed == true)
         {
-            if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
-            {
-                PointMovePlate(xBoard - 2, yBoard);
-            }
+            if (sc.PositionOnBoard(xBoard - 1, yBoard) && sc.PositionOnBoard(xBoard - 2, yBoard) && sc.PositionOnBoard(xBoard - 3, yBoard) && sc.PositionOnBoard(xBoard - 4, yBoard))
+                if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
+                {
+                    PointMovePlate(xBoard - 2, yBoard);
+                }
         }
 
         if (sc.GetCurrentPlayer() == "black" && sc.BlackCastleQueenAllowed == true)
         {
-            if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
-            {
-                PointMovePlate(xBoard - 2, yBoard);
-            }
+            if (sc.PositionOnBoard(xBoard - 1, yBoard) && sc.PositionOnBoard(xBoard - 2, yBoard) && sc.PositionOnBoard(xBoard - 3, yBoard) && sc.PositionOnBoard(xBoard - 4, yBoard))
+                if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
+                {
+                    PointMovePlate(xBoard - 2, yBoard);
+                }
         }
     }
 
     public void PointMovePlate(int x, int y)
     {
         GameScript sc  = controller.GetComponent<GameScript>();
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
+
         if (sc.PositionOnBoard(x, y)) {
         GameObject cp = sc.GetPosition(x, y);
 
             if (cp == null) 
             {
-                MovePlateSpawn(x, y);    
+                if(cam.CheckMoveInList(x,y) == false) MovePlateSpawn(x, y);    
             } else if (cp.GetComponent<PieceController>().player != player) 
             {
                 MovePlateAttackSpawn(x, y);
