@@ -185,6 +185,7 @@ public class PieceController : MonoBehaviour
     public void LineMovePlate (int xIncrement, int yIncrement)
     {
         GameScript sc = controller.GetComponent<GameScript>();
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
 
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
@@ -198,7 +199,14 @@ public class PieceController : MonoBehaviour
 
         if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && sc.GetPosition(x, y).GetComponent<PieceController>().player != player)
         {
-            MovePlateAttackSpawn(x, y);
+            if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
+            {
+                if (x == int.Parse(cam.checkingPiece.Substring(0, 1)) && y == int.Parse(cam.checkingPiece.Substring(2, 1))) MovePlateAttackSpawn(x, y);
+            }
+            else
+            {
+                MovePlateAttackSpawn(x, y);
+            }
         }
     }
 
@@ -218,15 +226,16 @@ public class PieceController : MonoBehaviour
     {
 
         GameScript sc = controller.GetComponent<GameScript>();
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
 
-        PointMovePlate(xBoard, yBoard + 1);
-        PointMovePlate(xBoard, yBoard - 1);
-        PointMovePlate(xBoard - 1, yBoard - 1);
-        PointMovePlate(xBoard - 1, yBoard);
-        PointMovePlate(xBoard - 1, yBoard + 1);
-        PointMovePlate(xBoard + 1, yBoard - 1);
-        PointMovePlate(xBoard + 1, yBoard);
-        PointMovePlate(xBoard + 1, yBoard + 1);
+        if (cam.CheckMoveInList(xBoard, yBoard + 1) == false) PointMovePlate(xBoard, yBoard + 1);
+        if (cam.CheckMoveInList(xBoard, yBoard - 1) == false) PointMovePlate(xBoard, yBoard - 1);
+        if (cam.CheckMoveInList(xBoard - 1, yBoard - 1) == false) PointMovePlate(xBoard - 1, yBoard - 1);
+        if (cam.CheckMoveInList(xBoard - 1, yBoard) == false) PointMovePlate(xBoard - 1, yBoard);
+        if (cam.CheckMoveInList(xBoard - 1, yBoard + 1) == false) PointMovePlate(xBoard - 1, yBoard + 1);
+        if (cam.CheckMoveInList(xBoard + 1, yBoard - 1) == false) PointMovePlate(xBoard + 1, yBoard - 1);
+        if (cam.CheckMoveInList(xBoard + 1, yBoard) == false) PointMovePlate(xBoard + 1, yBoard);
+        if (cam.CheckMoveInList(xBoard + 1, yBoard + 1) == false) PointMovePlate(xBoard + 1, yBoard + 1);
 
         if (sc.GetCurrentPlayer() == "white" && sc.WhiteCastleKingAllowed == true)
         {
@@ -273,12 +282,29 @@ public class PieceController : MonoBehaviour
         if (sc.PositionOnBoard(x, y)) {
         GameObject cp = sc.GetPosition(x, y);
 
-            if (cp == null) 
+            if (cp == null)
             {
-                if(cam.CheckMoveInList(x,y) == false) MovePlateSpawn(x, y);    
-            } else if (cp.GetComponent<PieceController>().player != player) 
+                if (this.name != "black_king" && this.name != "white_king")
+                {
+                    if (sc.GetCurrentPlayer() == "black" && cam.blackChecked == false) MovePlateSpawn(x, y);
+                    else if (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == false) MovePlateSpawn(x, y);
+                }
+                else
+                {
+                    MovePlateSpawn(x, y);
+                }
+            } 
+
+            else if (cp.GetComponent<PieceController>().player != player) 
             {
-                MovePlateAttackSpawn(x, y);
+                if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
+                {
+                    if (x == int.Parse(cam.checkingPiece.Substring(0, 1)) && y == int.Parse(cam.checkingPiece.Substring(2, 1))) MovePlateAttackSpawn(x, y);
+                }
+                else
+                {
+                    MovePlateAttackSpawn(x, y);
+                }
             }
         }
     }
@@ -286,11 +312,13 @@ public class PieceController : MonoBehaviour
     public void PawnMovePlate(int x, int y)
     {
         GameScript sc = controller.GetComponent<GameScript>();
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
         if (sc.PositionOnBoard(x, y))
         {
             if (sc.GetPosition(x,y) == null)
             {
-                MovePlateSpawn(x, y);
+                if (sc.GetCurrentPlayer() == "black" && cam.blackChecked == false) MovePlateSpawn(x, y);
+                else if (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == false) MovePlateSpawn(x, y); 
             }
         }
     }
@@ -298,11 +326,19 @@ public class PieceController : MonoBehaviour
     public void PawnAttackMovePlate(int x, int y)
     {
         GameScript sc = controller.GetComponent<GameScript>();
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
         if (sc.PositionOnBoard(x, y))
         {
             if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && sc.GetPosition(x, y).GetComponent<PieceController>().player != player)
             {
-                MovePlateAttackSpawn(x, y);
+                if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
+                {
+                    if (x == int.Parse(cam.checkingPiece.Substring(0, 1)) && y == int.Parse(cam.checkingPiece.Substring(2, 1))) MovePlateAttackSpawn(x, y);
+                }
+                else
+                {
+                    MovePlateAttackSpawn(x, y);
+                }
             }
         }
     }

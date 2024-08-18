@@ -12,10 +12,16 @@ public class CalculateAllMoves : MonoBehaviour
 
     public int moveCount = 0;
 
+    public bool whiteChecked = false;
+    public bool blackChecked = false;
+
+    public string checkingPiece = "";
+
     private string first = "";
     private string second = "";
 
     public List<string> allMoves = new List<string>();
+    public List<string> test = new List<string>();
 
     int matrixX;
     int matrixY;
@@ -28,6 +34,8 @@ public class CalculateAllMoves : MonoBehaviour
         File.WriteAllText(Application.persistentDataPath + "/moveList.txt", string.Empty);
         File.WriteAllText(Application.persistentDataPath + "/moveListReadable.txt", string.Empty);
         moveCount = 0;
+        whiteChecked = false;
+        blackChecked = false;
 
         for (int i = 7; i >= 0; i--) 
             for (int j = 0; j < 8; j++)
@@ -37,13 +45,12 @@ public class CalculateAllMoves : MonoBehaviour
                     xBoard = gs.GetPosition(j, i).GetComponent<PieceController>().xBoard;
                     yBoard = gs.GetPosition(j, i).GetComponent<PieceController>().yBoard;
 
-                    //if (player == "white" && gs.GetPosition(j, i).name.Substring(0,5) == "black") SpawnPossibleMoves(gs.GetPosition(j, i).name);
-                    //if (player == "black" && gs.GetPosition(j, i).name.Substring(0,5) == "white") SpawnPossibleMoves(gs.GetPosition(j, i).name);
                     if (player == gs.GetPosition(j, i).name.Substring(0,5)) SpawnPossibleMoves(gs.GetPosition(j, i).name);
                 }
             }
         using (StreamReader reader = new StreamReader(Application.persistentDataPath + "/moveList.txt")) while (reader.ReadLine() != null) moveCount++;
     }
+
 
     public void AddMovesToList()
     {
@@ -125,19 +132,16 @@ public class CalculateAllMoves : MonoBehaviour
         compare = piece.Split("_");
         first = compare[0];
 
-
-        string[] ep = null;
+        //string[] ep = null;
 
         switch (piece)
         {
             case "black_rook":
             case "white_rook":
-                //Debug.Log("rook start!");
                 LineMovePlate(1, 0, piece);
                 LineMovePlate(0, 1, piece);
                 LineMovePlate(-1, 0, piece);
                 LineMovePlate(0, -1, piece);
-                //Debug.Log("rook ends!");
                 break;
             case "black_knight":
             case "white_knight":
@@ -276,9 +280,9 @@ public class CalculateAllMoves : MonoBehaviour
 
         string[] compare = null;
 
+        if (checkingPiece == "")
         while (sc.PositionOnBoard(x, y))
         {
-
             if (sc.GetPosition(x, y) != null)
             {
                 compare = sc.GetPosition(x, y).name.Split("_");
@@ -287,28 +291,44 @@ public class CalculateAllMoves : MonoBehaviour
                 {
                     if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king")
                     {
-                        Debug.Log("Check! " + piece);
+                        if (sc.GetPosition(x, y).name == "white_king") whiteChecked = true;
+                        else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
+
+                        checkingPiece = xBoard + "," + yBoard; 
                         WriteToFileReadable(piece + ": " + Convert(x, y));
                         WriteToFile(x + " " + y);
+                        test.Add(x + "," + y);
+                        x += xIncrement;
+                        y += yIncrement;
                     }
                     else
                     {
                         WriteToFileReadable(piece + ": " + Convert(x, y));
                         WriteToFile(x + " " + y);
+                        test.Add(x + "," + y);
                         break;
                     }
                 }
                 else break;
             }
-
-            if (sc.GetPosition(x, y) == null)
-            {
-                WriteToFileReadable(piece + ": " + Convert(x, y));
-                WriteToFile(x + " " + y);
-                x += xIncrement;
-                y += yIncrement;
+            if(sc.PositionOnBoard(x, y)){
+                if (sc.GetPosition(x, y) == null)
+                {
+                    test.Add(x + "," + y);
+                    WriteToFileReadable(piece + ": " + Convert(x, y));
+                    WriteToFile(x + " " + y);
+                    x += xIncrement;
+                    y += yIncrement; 
+                }
             }
         }
+        //string lol = "";
+        //foreach (string s in test)
+        //{
+        //    if (s == checkingPiece) lol = s;
+        //}
+        //if (lol == "") test.Clear();
+        if (checkingPiece == "") test.Clear();
     }
 
     public void PointMovePlate(int x, int y, string piece)
@@ -334,7 +354,12 @@ public class CalculateAllMoves : MonoBehaviour
                 if (sc.GetPosition(x, y) != null) second = compare[0];
                 if (second != first)
                 {
-                    if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king") Debug.Log("Check! " + piece);
+                    if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king") 
+                    {
+                        if (sc.GetPosition(x, y).name == "white_king") whiteChecked = true;
+                        else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
+                        checkingPiece = xBoard + "," + yBoard; 
+                    }
                     WriteToFileReadable(piece + ": " + Convert(x, y));
                     WriteToFile(x + " " + y);
                 }
@@ -371,10 +396,17 @@ public class CalculateAllMoves : MonoBehaviour
         {
             if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && first != second)
             {
-                if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king") Debug.Log("Check! " + piece);
+                if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king")
+                {
+                    if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king")
+                    {
+                        if (sc.GetPosition(x, y).name == "white_king") whiteChecked = true;
+                        else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
+                        checkingPiece = xBoard + "," + yBoard; 
+                    }
+                }
                 WriteToFileReadable(piece + ": " + Convert(x, y));
                 WriteToFile(x + " " + y);
-   
             }
         }
     }
