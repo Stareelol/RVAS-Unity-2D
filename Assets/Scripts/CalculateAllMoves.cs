@@ -11,17 +11,18 @@ public class CalculateAllMoves : MonoBehaviour
     private int yBoard = -1;
 
     public int moveCount = 0;
+    public int numberOfChecks = 0;
 
     public bool whiteChecked = false;
     public bool blackChecked = false;
 
-    public string checkingPiece = "";
+    public List<string> checkingPiece = new List<string>();
 
     private string first = "";
     private string second = "";
 
     public List<string> allMoves = new List<string>();
-    public List<string> test = new List<string>();
+    public List<string> slidingMoves = new List<string>();
 
     int matrixX;
     int matrixY;
@@ -33,9 +34,12 @@ public class CalculateAllMoves : MonoBehaviour
 
         File.WriteAllText(Application.persistentDataPath + "/moveList.txt", string.Empty);
         File.WriteAllText(Application.persistentDataPath + "/moveListReadable.txt", string.Empty);
+        File.WriteAllText(Application.persistentDataPath + "/slidingMoves.txt", string.Empty);
         moveCount = 0;
         whiteChecked = false;
         blackChecked = false;
+        checkingPiece.Clear();
+        slidingMoves.Clear();
 
         for (int i = 7; i >= 0; i--) 
             for (int j = 0; j < 8; j++)
@@ -63,12 +67,56 @@ public class CalculateAllMoves : MonoBehaviour
             }
     }
 
+    public bool NoCheck(int x, int y)
+    {
+        int slidingCount = Count();
+
+        if (slidingMoves.Count == 0) return true;
+        if (slidingCount > 1) return true;
+
+        foreach (string move in slidingMoves)
+        {
+            int compX = int.Parse(move.Substring(0, 1));
+            int compY = int.Parse(move.Substring(1, 1));
+            if (compX == x && compY == y) return false;
+        }
+
+        return true;
+    }
+
+    public int Count()
+    {
+        GameScript gs = this.GetComponent<GameScript>();
+        int slidingCount = 0;
+
+        foreach (string move in slidingMoves)
+        {
+            int compX = int.Parse(move.Substring(0, 1));
+            int compY = int.Parse(move.Substring(1, 1));
+            if (gs.GetPosition(compX, compY) != null && (gs.GetPosition(compX, compY).name != "white_king" && gs.GetPosition(compX, compY).name != "black_king")) slidingCount++;
+        }
+
+        return slidingCount;
+    }
+
     public bool CheckMoveInList(int x, int y) { 
     
         foreach (string move in allMoves)
         {
             int compX = int.Parse(move.Substring(0, 1));
             int compY = int.Parse(move.Substring(1, 2));
+            if (compX == x && compY == y) return true;
+        }
+
+        return false;
+    }
+
+    public bool CheckSlidingMoveInList(int x, int y)
+    {
+        foreach (string move in slidingMoves)
+        {
+            int compX = int.Parse(move.Substring(0, 1));
+            int compY = int.Parse(move.Substring(1, 1));
             if (compX == x && compY == y) return true;
         }
 
@@ -87,6 +135,14 @@ public class CalculateAllMoves : MonoBehaviour
     public void WriteToFileReadable(string character)
     {
         string path = Application.persistentDataPath + "/moveListReadable.txt";
+        StreamWriter writer = new StreamWriter(path, true);
+        writer.WriteLine(character);
+        writer.Close();
+    }
+
+    public void WriteToFileSliding(string character)
+    {
+        string path = Application.persistentDataPath + "/slidingMoves.txt";
         StreamWriter writer = new StreamWriter(path, true);
         writer.WriteLine(character);
         writer.Close();
@@ -132,6 +188,8 @@ public class CalculateAllMoves : MonoBehaviour
         compare = piece.Split("_");
         first = compare[0];
 
+        numberOfChecks = checkingPiece.Count;
+
         //string[] ep = null;
 
         switch (piece)
@@ -142,6 +200,11 @@ public class CalculateAllMoves : MonoBehaviour
                 LineMovePlate(0, 1, piece);
                 LineMovePlate(-1, 0, piece);
                 LineMovePlate(0, -1, piece);
+                //SlidingMovePlateCalculate
+                SlidingMovePlateCalculate(1, 0, piece);
+                SlidingMovePlateCalculate(0, 1, piece);
+                SlidingMovePlateCalculate(-1, 0, piece);
+                SlidingMovePlateCalculate(0, -1, piece);
                 break;
             case "black_knight":
             case "white_knight":
@@ -153,6 +216,11 @@ public class CalculateAllMoves : MonoBehaviour
                 LineMovePlate(1, -1, piece);
                 LineMovePlate(-1, 1, piece);
                 LineMovePlate(-1, -1, piece);
+                //SlidingMovePlateCalculate
+                SlidingMovePlateCalculate(1, 1, piece);
+                SlidingMovePlateCalculate(1, -1, piece);
+                SlidingMovePlateCalculate(-1, 1, piece);
+                SlidingMovePlateCalculate(-1, -1, piece);
                 break;
             case "black_king":
             case "white_king":
@@ -168,6 +236,15 @@ public class CalculateAllMoves : MonoBehaviour
                 LineMovePlate(-1, -1, piece);
                 LineMovePlate(-1, 1, piece);
                 LineMovePlate(1, -1, piece);
+                //SlidingMovePlateCalculate
+                SlidingMovePlateCalculate(1, 0, piece);
+                SlidingMovePlateCalculate(0, 1, piece);
+                SlidingMovePlateCalculate(1, 1, piece);
+                SlidingMovePlateCalculate(-1, 0, piece);
+                SlidingMovePlateCalculate(0, -1, piece);
+                SlidingMovePlateCalculate(-1, -1, piece);
+                SlidingMovePlateCalculate(-1, 1, piece);
+                SlidingMovePlateCalculate(1, -1, piece);
                 break;
             case "black_pawn":
                 PawnMovePlate(xBoard, yBoard - 1, piece);
@@ -278,43 +355,40 @@ public class CalculateAllMoves : MonoBehaviour
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
+        List<string> tempList = new List<string>();
         string[] compare = null;
 
-        if (checkingPiece == "")
         while (sc.PositionOnBoard(x, y))
         {
-            if (sc.GetPosition(x, y) != null)
+            GameObject pieceOnBoard = sc.GetPosition(x, y);
+
+            if (pieceOnBoard != null)
             {
-                compare = sc.GetPosition(x, y).name.Split("_");
+                compare = pieceOnBoard.name.Split("_");
                 second = compare[0];
                 if (second != first)
                 {
                     if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king")
                     {
-                        if (sc.GetPosition(x, y).name == "white_king") whiteChecked = true;
-                        else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
-
-                        checkingPiece = xBoard + "," + yBoard; 
+                        if (pieceOnBoard.name == "white_king") whiteChecked = true;
+                        else if ((pieceOnBoard.name == "black_king")) blackChecked = true;
                         WriteToFileReadable(piece + ": " + Convert(x, y));
-                        WriteToFile(x + " " + y);
-                        test.Add(x + "," + y);
+                        WriteToFile(x + " " + y);                     
                         x += xIncrement;
                         y += yIncrement;
                     }
                     else
                     {
                         WriteToFileReadable(piece + ": " + Convert(x, y));
-                        WriteToFile(x + " " + y);
-                        test.Add(x + "," + y);
+                        WriteToFile(x + " " + y);                     
                         break;
                     }
                 }
                 else break;
             }
             if(sc.PositionOnBoard(x, y)){
-                if (sc.GetPosition(x, y) == null)
-                {
-                    test.Add(x + "," + y);
+                if (pieceOnBoard == null)
+                {                 
                     WriteToFileReadable(piece + ": " + Convert(x, y));
                     WriteToFile(x + " " + y);
                     x += xIncrement;
@@ -322,13 +396,55 @@ public class CalculateAllMoves : MonoBehaviour
                 }
             }
         }
-        //string lol = "";
-        //foreach (string s in test)
-        //{
-        //    if (s == checkingPiece) lol = s;
-        //}
-        //if (lol == "") test.Clear();
-        if (checkingPiece == "") test.Clear();
+    }
+
+    public void SlidingMovePlateCalculate(int xIncrement, int yIncrement, string piece) {
+
+        GameScript sc = controller.GetComponent<GameScript>();
+
+        int x = xBoard + xIncrement;
+        int y = yBoard + yIncrement;
+
+        List<string> tempList = new List<string>();
+
+        string[] compare = null;
+
+        while (sc.PositionOnBoard(x, y))
+        {
+            GameObject pieceOnBoard = sc.GetPosition(x, y);
+
+            if (pieceOnBoard != null)
+            {
+                compare = pieceOnBoard.name.Split("_");
+                second = compare[0];
+                if (second != first)
+                {
+                    if (second[0] == 'w' && pieceOnBoard.name == "white_king" || second[0] == 'b' && pieceOnBoard.name == "black_king")
+                    {
+                        WriteToFileSliding(piece + ": " + Convert(x, y));
+                        tempList.Add(x + "" + y);
+                        slidingMoves.AddRange(tempList);
+                        checkingPiece.Add(xBoard + "" + yBoard);
+                        break;
+                    }
+                    else
+                    {
+                        tempList.Add(x + "" + y);
+                        WriteToFileSliding(piece + ": " + Convert(x, y));
+                        x += xIncrement;
+                        y += yIncrement;
+                    }
+                }
+                else break;
+            }
+            else
+            {
+                tempList.Add(x + "" + y);
+                WriteToFileSliding(piece + ": " + Convert(x, y));
+                x += xIncrement;
+                y += yIncrement;
+            }
+        }
     }
 
     public void PointMovePlate(int x, int y, string piece)
@@ -358,7 +474,7 @@ public class CalculateAllMoves : MonoBehaviour
                     {
                         if (sc.GetPosition(x, y).name == "white_king") whiteChecked = true;
                         else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
-                        checkingPiece = xBoard + "," + yBoard; 
+                        checkingPiece.Add(xBoard + "" + yBoard);
                     }
                     WriteToFileReadable(piece + ": " + Convert(x, y));
                     WriteToFile(x + " " + y);
@@ -402,7 +518,7 @@ public class CalculateAllMoves : MonoBehaviour
                     {
                         if (sc.GetPosition(x, y).name == "white_king") whiteChecked = true;
                         else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
-                        checkingPiece = xBoard + "," + yBoard; 
+                        checkingPiece.Add(xBoard + "" + yBoard);
                     }
                 }
                 WriteToFileReadable(piece + ": " + Convert(x, y));

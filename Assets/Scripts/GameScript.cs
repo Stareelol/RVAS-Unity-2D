@@ -24,7 +24,7 @@ public class GameScript : MonoBehaviour
     public int index_black = 0;
     public int index_white = 0;
 
-    private string currentPlayer = "white";
+    public string currentPlayer = "white";
 
     private bool gameOver = false;
 
@@ -94,8 +94,11 @@ public class GameScript : MonoBehaviour
 
     void Start()
     {
-        //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
-        FENtoPosition("8/8/3k4/8/r7/3Q4/3R4/3K4 w - - 0 1");
+
+        CalculateAllMoves cam = this.GetComponent<CalculateAllMoves>();
+
+        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
+        //FENtoPosition("7Q/1r3k2/7Q/8/6Q1/4B3/4K3/8 w - - 0 1"); 
 
         for (int i = 0; i < index_black; i++)
         {
@@ -106,6 +109,8 @@ public class GameScript : MonoBehaviour
         {
             SetPosition(playerWhite[i]);
         }
+
+        cam.Calculate(currentPlayer);
 
     }
 

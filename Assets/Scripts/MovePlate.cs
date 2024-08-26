@@ -27,7 +27,6 @@ public class MovePlate : MonoBehaviour
 
         if (attack)
         {
-            // Change to red
             gameObject.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
@@ -53,12 +52,13 @@ public class MovePlate : MonoBehaviour
 
             createdByPiece.GetComponent<PieceController>().SetCoords();
 
-            gs.SetPosition(createdByPiece);
+            gs.SetPosition(createdByPiece);       
 
             cam.Calculate(gs.GetCurrentPlayer());
             cam.AddMovesToList();
 
             gs.NextTurn();
+            RemoveCastlingIfChecked(gs.GetCurrentPlayer());
 
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
@@ -80,17 +80,36 @@ public class MovePlate : MonoBehaviour
             createdByPiece.GetComponent<PieceController>().SetCoords();
             gs.SetPosition(createdByPiece);
 
+
+            cam.Calculate(gs.GetCurrentPlayer());
             CheckPromotion();
+            
             CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
-
-            cam.Calculate(gs.GetCurrentPlayer());
             cam.AddMovesToList();
             gs.NextTurn();
+            RemoveCastlingIfChecked(gs.GetCurrentPlayer());
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
 
+    }
+
+    public void RemoveCastlingIfChecked(string player)
+    {
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
+
+        if (cam.blackChecked == true && player == "black")
+        {
+            controller.GetComponent<GameScript>().BlackCastleKingAllowed = false;
+            controller.GetComponent<GameScript>().BlackCastleQueenAllowed = false;
+        }
+        if (cam.whiteChecked == true && player == "white")
+        {
+            controller.GetComponent<GameScript>().WhiteCastleKingAllowed = false;
+            controller.GetComponent<GameScript>().WhiteCastleQueenAllowed = false;
+        }
     }
 
     public void CheckEnPassant()
@@ -170,19 +189,21 @@ public class MovePlate : MonoBehaviour
     }
     public void CheckCastlingShort(string piece) 
     {
+        GameScript gs = controller.GetComponent<GameScript>();
         switch (piece)
         {
-            case "white_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 6 && createdByPiece.GetComponent<PieceController>().yBoard == 0 && controller.GetComponent<GameScript>().GetPosition(7, 0).name == "white_rook") CastleWhiteShort(); ; break;
-            case "black_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 6 && createdByPiece.GetComponent<PieceController>().yBoard == 7 && controller.GetComponent<GameScript>().GetPosition(7, 7).name == "black_rook") CastleBlackShort(); ; break;
+            case "white_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 6 && createdByPiece.GetComponent<PieceController>().yBoard == 0 && controller.GetComponent<GameScript>().GetPosition(7, 0) != null && controller.GetComponent<GameScript>().GetPosition(7, 0).name == "white_rook" && gs.WhiteCastleKingAllowed == true) CastleWhiteShort(); ; break;
+            case "black_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 6 && createdByPiece.GetComponent<PieceController>().yBoard == 7 && controller.GetComponent<GameScript>().GetPosition(7, 7) != null && controller.GetComponent<GameScript>().GetPosition(7, 7).name == "black_rook" && gs.BlackCastleKingAllowed == true) CastleBlackShort(); ; break;
         }      
     }
 
     public void CheckCastlingLong(string piece)
     {
+        GameScript gs = controller.GetComponent<GameScript>();
         switch (piece)
         {
-            case "white_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 2 && createdByPiece.GetComponent<PieceController>().yBoard == 0 && controller.GetComponent<GameScript>().GetPosition(0, 0).name == "white_rook") CastleWhiteLong(); ; break;
-            case "black_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 2 && createdByPiece.GetComponent<PieceController>().yBoard == 7 && controller.GetComponent<GameScript>().GetPosition(0, 7).name == "black_rook") CastleBlackLong(); ; break;
+            case "white_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 2 && createdByPiece.GetComponent<PieceController>().yBoard == 0 && controller.GetComponent<GameScript>().GetPosition(0, 0) != null && controller.GetComponent<GameScript>().GetPosition(0, 0).name == "white_rook" && gs.WhiteCastleQueenAllowed == true) CastleWhiteLong(); ; break;
+            case "black_king": if (createdByPiece.GetComponent<PieceController>().xBoard == 2 && createdByPiece.GetComponent<PieceController>().yBoard == 7 && controller.GetComponent<GameScript>().GetPosition(0, 7) != null && controller.GetComponent<GameScript>().GetPosition(0, 7).name == "black_rook" && gs.WhiteCastleQueenAllowed == true) CastleBlackLong(); ; break;
         }
     }
 
@@ -193,6 +214,7 @@ public class MovePlate : MonoBehaviour
         GameObject created = controller.GetComponent<GameScript>().Create("white_rook", 5,0);
         controller.GetComponent<GameScript>().SetPosition(created);
         controller.GetComponent<GameScript>().WhiteCastleKingAllowed = false;
+        controller.GetComponent<GameScript>().WhiteCastleQueenAllowed = false;
     }
 
     public void CastleBlackShort()
@@ -202,6 +224,7 @@ public class MovePlate : MonoBehaviour
         GameObject created = controller.GetComponent<GameScript>().Create("black_rook", 5, 7);
         controller.GetComponent<GameScript>().SetPosition(created);
         controller.GetComponent<GameScript>().BlackCastleKingAllowed = false;
+        controller.GetComponent<GameScript>().BlackCastleQueenAllowed = false;
     }
 
     public void CastleWhiteLong()
@@ -210,6 +233,7 @@ public class MovePlate : MonoBehaviour
         controller.GetComponent<GameScript>().SetPositionEmpty(0, 0);
         GameObject createdRook = controller.GetComponent<GameScript>().Create("white_rook", 3, 0);
         controller.GetComponent<GameScript>().SetPosition(createdRook);
+        controller.GetComponent<GameScript>().WhiteCastleKingAllowed = false;
         controller.GetComponent<GameScript>().WhiteCastleQueenAllowed = false;
     }
 
@@ -219,6 +243,7 @@ public class MovePlate : MonoBehaviour
         controller.GetComponent<GameScript>().SetPositionEmpty(0, 7);
         GameObject createdRook = controller.GetComponent<GameScript>().Create("black_rook", 3, 7);
         controller.GetComponent<GameScript>().SetPosition(createdRook);
+        controller.GetComponent<GameScript>().BlackCastleKingAllowed = false;
         controller.GetComponent<GameScript>().BlackCastleQueenAllowed = false;
     }
 
