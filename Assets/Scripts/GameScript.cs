@@ -4,6 +4,7 @@ public class GameScript : MonoBehaviour
 {
 
     public GameObject chesspiece;
+    public GameObject checkBG;
 
     private GameObject[,] positions = new GameObject[8,8];
     private GameObject[] playerBlack  = new GameObject[16];
@@ -11,6 +12,9 @@ public class GameScript : MonoBehaviour
 
     private GameObject black_king;
     private GameObject white_king;
+
+    public GameObject canvas;
+    public bool button_pressed = false;
 
     public bool WhiteCastleQueenAllowed = false;
     public bool WhiteCastleKingAllowed = false;
@@ -97,8 +101,8 @@ public class GameScript : MonoBehaviour
 
         CalculateAllMoves cam = this.GetComponent<CalculateAllMoves>();
 
-        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
-        //FENtoPosition("7Q/1r3k2/7Q/8/6Q1/4B3/4K3/8 w - - 0 1"); 
+        //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
+        FENtoPosition("7k/PPPPPP2/8/8/8/8/pppppp2/7K w - - 0 1"); //
 
         for (int i = 0; i < index_black; i++)
         {
@@ -116,7 +120,7 @@ public class GameScript : MonoBehaviour
 
     public GameObject Create(string name, int x, int y) 
     {
-        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -1), Quaternion.identity);
+        GameObject obj = Instantiate(chesspiece, new Vector3(0, 0, -2), Quaternion.identity);
         PieceController controller = obj.GetComponent<PieceController>();
         controller.name = name;
         controller.xBoard = x;
@@ -165,26 +169,5 @@ public class GameScript : MonoBehaviour
     {
         if (currentPlayer == "white") currentPlayer = "black";
         else currentPlayer = "white";
-    }
-
-    public void Update()
-    {
-        black_king = GameObject.Find("black_king");
-        white_king = GameObject.Find("white_king");
-
-        //if (black_king == null)
-        //{
-        //    gameOver = true;
-        //}
-        //if (white_king == null)
-        //{
-        //    gameOver = true;
-        //}
-
-        //if (gameOver == true)
-        //{
-        //    SceneManager.LoadScene("Main Menu");
-        //    gameOver = false;
-        //}
     }
 }

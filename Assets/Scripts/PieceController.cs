@@ -143,7 +143,7 @@ public class PieceController : MonoBehaviour
                 if (cam.numberOfChecks <= 1)
                 {
                     PawnMovePlate(xBoard, yBoard - 1);
-                    if (yBoard == 6) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
+                    if (yBoard == 6) if (gs.GetPosition(xBoard,yBoard - 1) == null) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
                     PawnAttackMovePlate(xBoard - 1, yBoard - 1);
                     PawnAttackMovePlate(xBoard + 1, yBoard - 1);
                     //EnPassantMovePlate();
@@ -153,7 +153,7 @@ public class PieceController : MonoBehaviour
                 if (cam.numberOfChecks <= 1)
                 {
                     PawnMovePlate(xBoard, yBoard + 1);
-                    if (yBoard == 1) PawnMovePlate(xBoard, yBoard + 2); // possible only if the pawn is in the starting pos
+                    if (yBoard == 1) if (gs.GetPosition(xBoard, yBoard + 1) == null) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
                     PawnAttackMovePlate(xBoard - 1, yBoard + 1);
                     PawnAttackMovePlate(xBoard + 1, yBoard + 1);
                     //EnPassantMovePlate();
@@ -189,18 +189,15 @@ public class PieceController : MonoBehaviour
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
-        
-
-
-        while (sc.PositionOnBoard(x,y) && sc.GetPosition(x,y) == null)
+        while (sc.PositionOnBoard(x,y) && sc.GetPosition(x, y) == null)
         {
             if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
             {
-                if (cam.CheckSlidingMoveInList(x, y)) MovePlateSpawn(x, y);
+                if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (cam.CheckSlidingMoveInList(x, y)) MovePlateSpawn(x, y);
             }
             else
             {
-                if (cam.NoCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
+                if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
             }
             x += xIncrement;
             y += yIncrement;
@@ -210,11 +207,11 @@ public class PieceController : MonoBehaviour
         {
             if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
             {
-                if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1)) && cam.CheckSlidingMoveInList(x, y)) MovePlateAttackSpawn(x, y);
+                if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) MovePlateAttackSpawn(x, y);
             }
             else
             {
-                MovePlateAttackSpawn(x, y);
+                if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateAttackSpawn(x, y);
             }
         }
     }
@@ -285,33 +282,36 @@ public class PieceController : MonoBehaviour
 
     public void PointMovePlate(int x, int y)
     {
-        GameScript sc  = controller.GetComponent<GameScript>();
+        GameScript sc = controller.GetComponent<GameScript>();
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
+        player = sc.GetCurrentPlayer();
 
-        if (sc.PositionOnBoard(x, y)) {
-        GameObject cp = sc.GetPosition(x, y);
+        if (sc.PositionOnBoard(x, y))
+        {
+            GameObject cp = sc.GetPosition(x, y);
 
             if (cp == null)
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {
-                    if (cam.CheckSlidingMoveInList(x, y)) MovePlateSpawn(x, y);
-                }
-                else {
-                    if (cam.NoCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
-                }
-                
-            } 
-
-            else if (cp.GetComponent<PieceController>().player != player) 
-            {
-                if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
-                {
-                    if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) MovePlateAttackSpawn(x, y);
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (cam.CheckSlidingMoveInList(x,y)) MovePlateSpawn(x, y);
                 }
                 else
                 {
-                    MovePlateAttackSpawn(x, y);
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
+                }
+
+            }
+
+            else if (cp != null && cp.GetComponent<PieceController>().player != player)
+            {
+                if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
+                {
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) MovePlateAttackSpawn(x, y);
+                }
+                else
+                {
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateAttackSpawn(x, y);
                 }
             }
         }
@@ -335,7 +335,7 @@ public class PieceController : MonoBehaviour
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {
-                    if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1)) && cam.CheckSlidingMoveInList(x, y)) MovePlateAttackSpawn(x, y);
+                    if ((cam.CheckSlidingMoveInList(x, y))) if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) MovePlateAttackSpawn(x, y);
                 }
                 else
                 {
@@ -353,9 +353,14 @@ public class PieceController : MonoBehaviour
         {
             if (sc.GetPosition(x,y) == null)
             {
-
-                if (sc.GetCurrentPlayer() == "black" && cam.blackChecked == false) if (cam.NoCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
-                if (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == false) if (cam.NoCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
+                if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
+                {
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (cam.CheckSlidingMoveInList(x, y)) MovePlateSpawn(x, y);
+                }
+                else
+                {
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
+                }
             }
         }
     }
@@ -370,11 +375,11 @@ public class PieceController : MonoBehaviour
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {
-                    if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1)) && cam.CheckSlidingMoveInList(x, y)) MovePlateAttackSpawn(x, y);
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) MovePlateAttackSpawn(x, y);
                 }
                 else
                 {
-                    MovePlateAttackSpawn(x, y);
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateAttackSpawn(x, y);
                 }
             }
         }

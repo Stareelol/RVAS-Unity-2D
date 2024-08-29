@@ -67,7 +67,7 @@ public class CalculateAllMoves : MonoBehaviour
             }
     }
 
-    public bool NoCheck(int x, int y)
+    public bool canMoveWithoutCheck(int x, int y) // proverava da li je figura u sliding
     {
         int slidingCount = Count();
 
@@ -111,7 +111,7 @@ public class CalculateAllMoves : MonoBehaviour
         return false;
     }
 
-    public bool CheckSlidingMoveInList(int x, int y)
+    public bool CheckSlidingMoveInList(int x, int y) // proverava da li je potez u sliding move-u
     {
         foreach (string move in slidingMoves)
         {
@@ -479,6 +479,11 @@ public class CalculateAllMoves : MonoBehaviour
                     WriteToFileReadable(piece + ": " + Convert(x, y));
                     WriteToFile(x + " " + y);
                 }
+                if (second == first)
+                {
+                    WriteToFileReadable(piece + ": " + Convert(x, y));
+                    WriteToFile(x + " " + y);
+                }
             }
         }
     }
@@ -507,10 +512,8 @@ public class CalculateAllMoves : MonoBehaviour
         {
             if (sc.GetPosition(x, y) != null) compare = sc.GetPosition(x, y).name.Split("_");
             if (sc.GetPosition(x, y) != null) second = compare[0];
-        }
-        if (sc.PositionOnBoard(x, y))
-        {
-            if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && first != second)
+
+            if (sc.GetPosition(x, y) != null && first != second)
             {
                 if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king")
                 {
@@ -521,6 +524,11 @@ public class CalculateAllMoves : MonoBehaviour
                         checkingPiece.Add(xBoard + "" + yBoard);
                     }
                 }
+                WriteToFileReadable(piece + ": " + Convert(x, y));
+                WriteToFile(x + " " + y);
+            }
+            if (sc.GetPosition(x, y) == null)
+            {
                 WriteToFileReadable(piece + ": " + Convert(x, y));
                 WriteToFile(x + " " + y);
             }

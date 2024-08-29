@@ -476,6 +476,7 @@ GameObject:
   - component: {fileID: 2104770346}
   - component: {fileID: 2104770349}
   - component: {fileID: 2104770350}
+  - component: {fileID: 2104770351}
   m_Layer: 0
   m_Name: Controller
   m_TagString: GameController
@@ -496,6 +497,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chesspiece: {fileID: 8512755822905862338, guid: 189811ea49696924a9e8aa2ba4c13633, type: 3}
+  checkBG: {fileID: 8015865557661209464, guid: 940232c7eec93b642b474bed30907e12, type: 3}
   WhiteCastleQueenAllowed: 0
   WhiteCastleKingAllowed: 0
   BlackCastleQueenAllowed: 0
@@ -505,6 +507,7 @@ MonoBehaviour:
   fullmoveCount: 0
   index_black: 0
   index_white: 0
+  currentPlayer: white
 --- !u!4 &2104770347
 Transform:
   m_ObjectHideFlags: 0
@@ -629,6 +632,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveCount: 0
+  numberOfChecks: 0
+  whiteChecked: 0
+  blackChecked: 0
+  checkingPiece: []
+  allMoves: []
+  slidingMoves: []
+--- !u!114 &2104770351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104770345}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 673b9b852bcc2d7438be78cb60115b8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  allDefensiveMoves: []
+  kingDefensiveMoves: []
+  player: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

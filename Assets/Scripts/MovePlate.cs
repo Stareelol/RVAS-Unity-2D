@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.IO;
+using System.Collections;
 
 public class MovePlate : MonoBehaviour
 {
@@ -9,8 +10,13 @@ public class MovePlate : MonoBehaviour
 
     GameObject board;
 
+    GameObject canvas;
+
     int matrixX;
     int matrixY;
+
+    public int promotedPieceX;
+    public int promotedPieceY;
 
     public bool attack = false;
 
@@ -36,6 +42,7 @@ public class MovePlate : MonoBehaviour
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
+        CalculateAllDMoves cadm = controller.GetComponent<CalculateAllDMoves>();
 
         if (attack)
         {
@@ -57,9 +64,13 @@ public class MovePlate : MonoBehaviour
             cam.Calculate(gs.GetCurrentPlayer());
             cam.AddMovesToList();
 
+            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
+            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
+
             gs.NextTurn();
             RemoveCastlingIfChecked(gs.GetCurrentPlayer());
-
+            cadm.Calculate(gs.GetCurrentPlayer());
+            cadm.IsCheckmate(gs.GetCurrentPlayer());
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
         }
 
@@ -80,17 +91,24 @@ public class MovePlate : MonoBehaviour
             createdByPiece.GetComponent<PieceController>().SetCoords();
             gs.SetPosition(createdByPiece);
 
-
-            cam.Calculate(gs.GetCurrentPlayer());
-            CheckPromotion();
+            CheckPromotion(gs.GetCurrentPlayer());
             
             CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
+            cam.Calculate(gs.GetCurrentPlayer());
             cam.AddMovesToList();
+
+            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
+            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
+
             gs.NextTurn();
+
+            cadm.Calculate(gs.GetCurrentPlayer());
+            cadm.IsCheckmate(gs.GetCurrentPlayer());
             RemoveCastlingIfChecked(gs.GetCurrentPlayer());
-            createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
+
+            createdByPiece.GetComponent<PieceController>().DestroyMovePlates(); 
         }
 
     }
@@ -99,16 +117,26 @@ public class MovePlate : MonoBehaviour
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
+        GameScript gs = controller.GetComponent<GameScript>();
+
+        GameObject black_king = GameObject.Find("black_king");
+        GameObject white_king = GameObject.Find("white_king");
+
 
         if (cam.blackChecked == true && player == "black")
         {
             controller.GetComponent<GameScript>().BlackCastleKingAllowed = false;
             controller.GetComponent<GameScript>().BlackCastleQueenAllowed = false;
+            GameObject spawn = Instantiate(gs.checkBG, new Vector3(black_king.transform.position.x, black_king.transform.position.y, -1), Quaternion.identity);
+            spawn.tag = "black_check";
+            
         }
         if (cam.whiteChecked == true && player == "white")
         {
             controller.GetComponent<GameScript>().WhiteCastleKingAllowed = false;
             controller.GetComponent<GameScript>().WhiteCastleQueenAllowed = false;
+            GameObject spawn = Instantiate(gs.checkBG, new Vector3(white_king.transform.position.x, white_king.transform.position.y, -1), Quaternion.identity);
+            spawn.tag = "white_check";
         }
     }
 
@@ -173,18 +201,77 @@ public class MovePlate : MonoBehaviour
         else gs.GetComponent<GameScript>().EnPassantSquare = " ";
     }
 
-    public void CheckPromotion() // PROMOTION DOES NOT WORK BECAUSE THERE IS NO SET POS
+    public void CheckPromotion(string player) 
     {
-        if (createdByPiece.name == "white_pawn" && createdByPiece.GetComponent<PieceController>().yBoard == 7)
+
+        controller = GameObject.FindGameObjectWithTag("GameController");
+        GameScript gs = controller.GetComponent<GameScript>();
+
+        if (player == "white" && createdByPiece.name == "white_pawn" && createdByPiece.GetComponent<PieceController>().yBoard == 7)
         {
-            controller.GetComponent<GameScript>().Create("white_queen", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
-            Destroy(createdByPiece);
+            gs.canvas.GetComponent<Canvas>().enabled = true;
+            GameObject canvas_object = GameObject.FindGameObjectWithTag("Canvas");
+            CanvasScript cs = canvas_object.GetComponent<CanvasScript>();
+
+            cs.ShowPromoteScreen(player);
+
+            while(gs.button_pressed == false)
+            {
+                Debug.Log("alo");
+            }
+
+            if (cs.QueenPress == true)
+            {
+                Debug.Log("queen");
+                Destroy(createdByPiece);
+                controller.GetComponent<GameScript>().SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                GameObject promotedPiece = controller.GetComponent<GameScript>().Create("white_queen", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                controller.GetComponent<GameScript>().SetPosition(promotedPiece);
+                cs.QueenPress = false;
+                gs.canvas.GetComponent<Canvas>().enabled = false;
+            }
+
+            if (cs.RookPress)
+            {
+                Destroy(createdByPiece);
+                controller.GetComponent<GameScript>().SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                GameObject promotedPiece = controller.GetComponent<GameScript>().Create("white_rook", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                controller.GetComponent<GameScript>().SetPosition(promotedPiece);
+                cs.RookPress = false;
+            }
+
+            if (cs.BishopPress)
+            {
+                Destroy(createdByPiece);
+                controller.GetComponent<GameScript>().SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                GameObject promotedPiece = controller.GetComponent<GameScript>().Create("white_bishop", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                controller.GetComponent<GameScript>().SetPosition(promotedPiece);
+                cs.BishopPress = false;
+            }
+
+            if (cs.KnightPress)
+            {
+                Destroy(createdByPiece);
+                controller.GetComponent<GameScript>().SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                GameObject promotedPiece = controller.GetComponent<GameScript>().Create("white_knight", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+                controller.GetComponent<GameScript>().SetPosition(promotedPiece);
+                cs.KnightPress = false;
+            }
+
+
         }
 
-        if (createdByPiece.name == "black_pawn" && createdByPiece.GetComponent<PieceController>().yBoard == 0)
+        if (player == "black" && createdByPiece.name == "black_pawn" && createdByPiece.GetComponent<PieceController>().yBoard == 0)
         {
-            controller.GetComponent<GameScript>().Create("black_queen", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+            gs.canvas.GetComponent<Canvas>().enabled = true;
+            GameObject canvas_object = GameObject.FindGameObjectWithTag("Canvas");
+            CanvasScript cs = canvas_object.GetComponent<CanvasScript>();
+            cs.ShowPromoteScreen(player);
+
             Destroy(createdByPiece);
+            controller.GetComponent<GameScript>().SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+            GameObject promotedPiece = controller.GetComponent<GameScript>().Create("black_queen", createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
+            controller.GetComponent<GameScript>().SetPosition(promotedPiece);
         }
     }
     public void CheckCastlingShort(string piece) 
