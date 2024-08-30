@@ -93,22 +93,22 @@ public class MovePlate : MonoBehaviour
             createdByPiece.GetComponent<PieceController>().SetCoords();
             gs.SetPosition(createdByPiece);
 
-            //CheckPromotion(gs.GetCurrentPlayer());
+            CheckPromotion(gs.GetCurrentPlayer());
 
-            //CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
-            //CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
+            CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
+            CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
-            //cam.Calculate(gs.GetCurrentPlayer());
-            //cam.AddMovesToList();
+            cam.Calculate(gs.GetCurrentPlayer());
+            cam.AddMovesToList();
 
-            //if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
-            //if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
+            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
+            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
 
-            //gs.NextTurn();
+            gs.NextTurn();
 
-            //cadm.Calculate(gs.GetCurrentPlayer());
-            //cadm.IsCheckmate(gs.GetCurrentPlayer());
-            //RemoveCastlingIfChecked(gs.GetCurrentPlayer());
+            cadm.Calculate(gs.GetCurrentPlayer());
+            cadm.IsCheckmate(gs.GetCurrentPlayer());
+            RemoveCastlingIfChecked(gs.GetCurrentPlayer());
 
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates(); 
         }
