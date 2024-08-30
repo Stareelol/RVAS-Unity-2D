@@ -64,7 +64,7 @@ public class MovePlate : MonoBehaviour
             CheckPromotion(gs.GetCurrentPlayer());
 
             cam.Calculate(gs.GetCurrentPlayer());
-            cam.AddMovesToList();
+            //cam.AddMovesToList();
 
             if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
             if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
@@ -99,7 +99,7 @@ public class MovePlate : MonoBehaviour
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
             cam.Calculate(gs.GetCurrentPlayer());
-            cam.AddMovesToList();
+            //cam.AddMovesToList();
 
             if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
             if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));

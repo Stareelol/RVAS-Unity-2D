@@ -31,9 +31,7 @@ public class CalculateAllDMoves : MonoBehaviour
                     xBoard = gs.GetPosition(j, i).GetComponent<PieceController>().xBoard;
                     yBoard = gs.GetPosition(j, i).GetComponent<PieceController>().yBoard;
 
-                    
-
-                    if (player == gs.GetPosition(j, i).name.Substring(0, 5)) SpawnDefensiveMoves(gs.GetPosition(j, i).name); 
+                    if (player == gs.GetPosition(j, i).name.Substring(0, 5)) SpawnDefensiveMoves(gs.GetPosition(j, i).name);
                 }
             }
     }
@@ -45,16 +43,17 @@ public class CalculateAllDMoves : MonoBehaviour
 
         switch (player)
         {
-            case "black": 
-                { 
-                   if (cam.blackChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("white checkmate");
-                    if (cam.blackChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("stalemate"); 
-                }; 
+            case "black":
+                {
+                    if (cam.blackChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("white checkmate");
+                    if (cam.blackChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("stalemate");
+                };
                 break;
-            case "white": { 
+            case "white":
+                {
                     if (cam.whiteChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("black checkmate");
                     if (cam.whiteChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("stalemate");
-                }; 
+                };
                 break;
         }
 
@@ -115,7 +114,7 @@ public class CalculateAllDMoves : MonoBehaviour
                 if (cam.numberOfChecks <= 1)
                 {
                     PawnMovePlate(xBoard, yBoard - 1);
-                    if (yBoard == 6) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
+                    if (yBoard == 6) if (gs.GetPosition(xBoard, yBoard - 1) == null) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
                     PawnAttackMovePlate(xBoard - 1, yBoard - 1);
                     PawnAttackMovePlate(xBoard + 1, yBoard - 1);
                     //EnPassantMovePlate();
@@ -125,7 +124,7 @@ public class CalculateAllDMoves : MonoBehaviour
                 if (cam.numberOfChecks <= 1)
                 {
                     PawnMovePlate(xBoard, yBoard + 1);
-                    if (yBoard == 1) PawnMovePlate(xBoard, yBoard + 2); // possible only if the pawn is in the starting pos
+                    if (yBoard == 1) if (gs.GetPosition(xBoard, yBoard + 1) == null) PawnMovePlate(xBoard, yBoard + 2); // possible only if the pawn is in the starting pos
                     PawnAttackMovePlate(xBoard - 1, yBoard + 1);
                     PawnAttackMovePlate(xBoard + 1, yBoard + 1);
                     //EnPassantMovePlate();
@@ -217,14 +216,14 @@ public class CalculateAllDMoves : MonoBehaviour
 
             if (cp == null)
             {
-                kingDefensiveMoves.Add(x + " " + y);
+                if (cam.canMoveWithoutCheck(xBoard, yBoard)) kingDefensiveMoves.Add(x + " " + y);
             }
 
             else if (cp.GetComponent<PieceController>().player != player)
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {
-                    if ((cam.CheckSlidingMoveInList(x, y))) if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) kingDefensiveMoves.Add(x + " " + y);
+                    if (x == int.Parse(cam.checkingPiece[0].Substring(0, 1)) && y == int.Parse(cam.checkingPiece[0].Substring(1, 1))) kingDefensiveMoves.Add(x + " " + y);
                 }
                 else
                 {
@@ -290,24 +289,22 @@ public class CalculateAllDMoves : MonoBehaviour
     {
 
         GameScript sc = controller.GetComponent<GameScript>();
-        CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
-        player = sc.GetCurrentPlayer();
 
-        if (cam.CheckMoveInList(xBoard, yBoard + 1) == false) PointMovePlateKing(xBoard, yBoard + 1);
-        if (cam.CheckMoveInList(xBoard, yBoard - 1) == false) PointMovePlateKing(xBoard, yBoard - 1);
-        if (cam.CheckMoveInList(xBoard - 1, yBoard - 1) == false) PointMovePlateKing(xBoard - 1, yBoard - 1);
-        if (cam.CheckMoveInList(xBoard - 1, yBoard) == false) PointMovePlateKing(xBoard - 1, yBoard);
-        if (cam.CheckMoveInList(xBoard - 1, yBoard + 1) == false) PointMovePlateKing(xBoard - 1, yBoard + 1);
-        if (cam.CheckMoveInList(xBoard + 1, yBoard - 1) == false) PointMovePlateKing(xBoard + 1, yBoard - 1);
-        if (cam.CheckMoveInList(xBoard + 1, yBoard) == false) PointMovePlateKing(xBoard + 1, yBoard);
-        if (cam.CheckMoveInList(xBoard + 1, yBoard + 1) == false) PointMovePlateKing(xBoard + 1, yBoard + 1);
+        PointMovePlateKing(xBoard, yBoard + 1);
+        PointMovePlateKing(xBoard, yBoard - 1);
+        PointMovePlateKing(xBoard - 1, yBoard - 1);
+        PointMovePlateKing(xBoard - 1, yBoard);
+        PointMovePlateKing(xBoard - 1, yBoard + 1);
+        PointMovePlateKing(xBoard + 1, yBoard - 1);
+        PointMovePlateKing(xBoard + 1, yBoard);
+        PointMovePlateKing(xBoard + 1, yBoard + 1);
 
         if (sc.GetCurrentPlayer() == "white" && sc.WhiteCastleKingAllowed == true)
         {
             if (sc.PositionOnBoard(xBoard + 1, yBoard) && sc.PositionOnBoard(xBoard + 2, yBoard) && sc.PositionOnBoard(xBoard + 3, yBoard))
                 if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
                 {
-                    if (cam.CheckMoveInList(xBoard + 2, yBoard) == false) PointMovePlateKing(xBoard + 2, yBoard);
+                    PointMovePlateKing(xBoard + 2, yBoard);
                 };
         }
 
@@ -316,7 +313,7 @@ public class CalculateAllDMoves : MonoBehaviour
             if (sc.PositionOnBoard(xBoard + 1, yBoard) && sc.PositionOnBoard(xBoard + 2, yBoard) && sc.PositionOnBoard(xBoard + 3, yBoard))
                 if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
                 {
-                    if (cam.CheckMoveInList(xBoard + 2, yBoard) == false) PointMovePlateKing(xBoard + 2, yBoard);
+                    PointMovePlateKing(xBoard + 2, yBoard);
                 };
         }
 
@@ -325,7 +322,7 @@ public class CalculateAllDMoves : MonoBehaviour
             if (sc.PositionOnBoard(xBoard - 1, yBoard) && sc.PositionOnBoard(xBoard - 2, yBoard) && sc.PositionOnBoard(xBoard - 3, yBoard) && sc.PositionOnBoard(xBoard - 4, yBoard))
                 if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
                 {
-                    if (cam.CheckMoveInList(xBoard - 2, yBoard) == false) PointMovePlateKing(xBoard - 2, yBoard);
+                    PointMovePlateKing(xBoard - 2, yBoard);
                 }
         }
 
@@ -334,10 +331,8 @@ public class CalculateAllDMoves : MonoBehaviour
             if (sc.PositionOnBoard(xBoard - 1, yBoard) && sc.PositionOnBoard(xBoard - 2, yBoard) && sc.PositionOnBoard(xBoard - 3, yBoard) && sc.PositionOnBoard(xBoard - 4, yBoard))
                 if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
                 {
-                    if (cam.CheckMoveInList(xBoard - 2, yBoard) == false) PointMovePlateKing(xBoard - 2, yBoard);
+                    PointMovePlateKing(xBoard - 2, yBoard);
                 }
         }
     }
-
-
 }

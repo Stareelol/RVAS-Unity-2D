@@ -185,7 +185,6 @@ public class CanvasScript : MonoBehaviour
         if (player == "white")
         {
             cam.Calculate("white");
-            cam.AddMovesToList();
             cadm.Calculate("black");
             cadm.IsCheckmate("black");
             RemoveCastlingIfChecked("black");
@@ -193,7 +192,6 @@ public class CanvasScript : MonoBehaviour
         if (player == "black")
         {
             cam.Calculate("black");
-            cam.AddMovesToList();
             cadm.Calculate("white");
             cadm.IsCheckmate("white");
             RemoveCastlingIfChecked("white");

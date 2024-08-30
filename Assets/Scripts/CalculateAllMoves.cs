@@ -10,7 +10,6 @@ public class CalculateAllMoves : MonoBehaviour
     private int xBoard = -1;
     private int yBoard = -1;
 
-    public int moveCount = 0;
     public int numberOfChecks = 0;
 
     public bool whiteChecked = false;
@@ -32,14 +31,12 @@ public class CalculateAllMoves : MonoBehaviour
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
 
-        File.WriteAllText(Application.persistentDataPath + "/moveList.txt", string.Empty);
-        File.WriteAllText(Application.persistentDataPath + "/moveListReadable.txt", string.Empty);
-        File.WriteAllText(Application.persistentDataPath + "/slidingMoves.txt", string.Empty);
-        moveCount = 0;
         whiteChecked = false;
         blackChecked = false;
+
         checkingPiece.Clear();
         slidingMoves.Clear();
+        allMoves.Clear();
 
         for (int i = 7; i >= 0; i--) 
             for (int j = 0; j < 8; j++)
@@ -51,19 +48,6 @@ public class CalculateAllMoves : MonoBehaviour
 
                     if (player == gs.GetPosition(j, i).name.Substring(0,5)) SpawnPossibleMoves(gs.GetPosition(j, i).name);
                 }
-            }
-        using (StreamReader reader = new StreamReader(Application.persistentDataPath + "/moveList.txt")) while (reader.ReadLine() != null) moveCount++;
-    }
-
-
-    public void AddMovesToList()
-    {
-        allMoves.Clear();
-        string lines;
-        using (StreamReader reader = new StreamReader(Application.persistentDataPath + "/moveList.txt"))
-            while ((lines = reader.ReadLine()) != null)
-            {
-                allMoves.Add(lines);
             }
     }
 
@@ -121,63 +105,6 @@ public class CalculateAllMoves : MonoBehaviour
         }
 
         return false;
-    }
-
-    public void WriteToFile(string character)
-    {
-        string path = Application.persistentDataPath + "/moveList.txt";
-        StreamWriter writer = new StreamWriter(path, true);
-        writer.WriteLine(character);
-        writer.Close();
-
-    }
-
-    public void WriteToFileReadable(string character)
-    {
-        string path = Application.persistentDataPath + "/moveListReadable.txt";
-        StreamWriter writer = new StreamWriter(path, true);
-        writer.WriteLine(character);
-        writer.Close();
-    }
-
-    public void WriteToFileSliding(string character)
-    {
-        string path = Application.persistentDataPath + "/slidingMoves.txt";
-        StreamWriter writer = new StreamWriter(path, true);
-        writer.WriteLine(character);
-        writer.Close();
-    }
-
-    public string Convert(int x, int y)
-    {
-
-        string converted = "";
-
-        switch (x)
-        {
-            case 0: converted += "a";break;
-            case 1: converted += "b"; break;
-            case 2: converted += "c"; break;
-            case 3: converted += "d"; break;
-            case 4: converted += "e"; break;
-            case 5: converted += "f"; break;
-            case 6: converted += "g"; break;
-            case 7: converted += "h"; break;
-        }
-
-        switch (y)
-        {
-            case 0: converted += "1"; break;
-            case 1: converted += "2"; break;
-            case 2: converted += "3"; break;
-            case 3: converted += "4"; break;
-            case 4: converted += "5"; break;
-            case 5: converted += "6"; break;
-            case 6: converted += "7"; break;
-            case 7: converted += "8"; break;
-        }
-
-        return converted;
     }
 
     public void SpawnPossibleMoves(string piece)
@@ -248,14 +175,14 @@ public class CalculateAllMoves : MonoBehaviour
                 break;
             case "black_pawn":
                 PawnMovePlate(xBoard, yBoard - 1, piece);
-                if (yBoard == 6) PawnMovePlate(xBoard, yBoard - 2, piece); // possible only if the pawn is in the starting pos
+                if (yBoard == 6) if (gs.GetPosition(xBoard, yBoard - 1) == null) PawnMovePlate(xBoard, yBoard - 2, piece); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard - 1, piece);
                 PawnAttackMovePlate(xBoard + 1, yBoard - 1, piece);
                 //CheckEnPassant();
                 break;
             case "white_pawn":
                 PawnMovePlate(xBoard, yBoard + 1, piece);
-                if (yBoard == 1) PawnMovePlate(xBoard, yBoard + 2, piece); // possible only if the pawn is in the starting pos
+                if (yBoard == 1) if (gs.GetPosition(xBoard, yBoard + 1) == null) PawnMovePlate(xBoard, yBoard + 2, piece); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard + 1, piece);
                 PawnAttackMovePlate(xBoard + 1, yBoard + 1, piece);
                 //CheckEnPassant();
@@ -372,15 +299,14 @@ public class CalculateAllMoves : MonoBehaviour
                     {
                         if (pieceOnBoard.name == "white_king") whiteChecked = true;
                         else if ((pieceOnBoard.name == "black_king")) blackChecked = true;
-                        WriteToFileReadable(piece + ": " + Convert(x, y));
-                        WriteToFile(x + " " + y);                     
+                     
+                        allMoves.Add(x + " " + y);
                         x += xIncrement;
                         y += yIncrement;
                     }
                     else
                     {
-                        WriteToFileReadable(piece + ": " + Convert(x, y));
-                        WriteToFile(x + " " + y);                     
+                        allMoves.Add(x + " " + y);
                         break;
                     }
                 }
@@ -389,8 +315,7 @@ public class CalculateAllMoves : MonoBehaviour
             if(sc.PositionOnBoard(x, y)){
                 if (pieceOnBoard == null)
                 {                 
-                    WriteToFileReadable(piece + ": " + Convert(x, y));
-                    WriteToFile(x + " " + y);
+                    allMoves.Add(x + " " + y);
                     x += xIncrement;
                     y += yIncrement; 
                 }
@@ -421,7 +346,6 @@ public class CalculateAllMoves : MonoBehaviour
                 {
                     if (second[0] == 'w' && pieceOnBoard.name == "white_king" || second[0] == 'b' && pieceOnBoard.name == "black_king")
                     {
-                        WriteToFileSliding(piece + ": " + Convert(x, y));
                         tempList.Add(x + "" + y);
                         slidingMoves.AddRange(tempList);
                         checkingPiece.Add(xBoard + "" + yBoard);
@@ -430,7 +354,6 @@ public class CalculateAllMoves : MonoBehaviour
                     else
                     {
                         tempList.Add(x + "" + y);
-                        WriteToFileSliding(piece + ": " + Convert(x, y));
                         x += xIncrement;
                         y += yIncrement;
                     }
@@ -440,7 +363,6 @@ public class CalculateAllMoves : MonoBehaviour
             else
             {
                 tempList.Add(x + "" + y);
-                WriteToFileSliding(piece + ": " + Convert(x, y));
                 x += xIncrement;
                 y += yIncrement;
             }
@@ -460,8 +382,7 @@ public class CalculateAllMoves : MonoBehaviour
 
             if (cp == null)
             {
-                WriteToFileReadable(piece + ": " + Convert(x, y));
-                WriteToFile(x + " " + y);
+                allMoves.Add(x + " " + y);
    
             }
             else if (cp != null)
@@ -476,13 +397,11 @@ public class CalculateAllMoves : MonoBehaviour
                         else if ((sc.GetPosition(x, y).name == "black_king")) blackChecked = true;
                         checkingPiece.Add(xBoard + "" + yBoard);
                     }
-                    WriteToFileReadable(piece + ": " + Convert(x, y));
-                    WriteToFile(x + " " + y);
+                    allMoves.Add(x + " " + y);
                 }
                 if (second == first)
                 {
-                    WriteToFileReadable(piece + ": " + Convert(x, y));
-                    WriteToFile(x + " " + y);
+                    allMoves.Add(x + " " + y);
                 }
             }
         }
@@ -495,8 +414,7 @@ public class CalculateAllMoves : MonoBehaviour
         {
             if (sc.GetPosition(x, y) == null)
             {
-                WriteToFileReadable(piece + ": " + Convert(x, y));
-                WriteToFile(x + " " + y);
+                allMoves.Add(x + " " + y);
             }
         }
     }
@@ -524,13 +442,11 @@ public class CalculateAllMoves : MonoBehaviour
                         checkingPiece.Add(xBoard + "" + yBoard);
                     }
                 }
-                WriteToFileReadable(piece + ": " + Convert(x, y));
-                WriteToFile(x + " " + y);
+                allMoves.Add(x + " " + y);
             }
             if (sc.GetPosition(x, y) == null)
             {
-                WriteToFileReadable(piece + ": " + Convert(x, y));
-                WriteToFile(x + " " + y);
+                allMoves.Add(x + " " + y);
             }
         }
     }
