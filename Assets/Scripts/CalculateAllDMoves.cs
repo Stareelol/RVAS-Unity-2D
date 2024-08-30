@@ -31,6 +31,8 @@ public class CalculateAllDMoves : MonoBehaviour
                     xBoard = gs.GetPosition(j, i).GetComponent<PieceController>().xBoard;
                     yBoard = gs.GetPosition(j, i).GetComponent<PieceController>().yBoard;
 
+                    
+
                     if (player == gs.GetPosition(j, i).name.Substring(0, 5)) SpawnDefensiveMoves(gs.GetPosition(j, i).name); 
                 }
             }

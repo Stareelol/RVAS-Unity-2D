@@ -101,9 +101,9 @@ public class GameScript : MonoBehaviour
 
         CalculateAllMoves cam = this.GetComponent<CalculateAllMoves>();
 
-        //FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
-        FENtoPosition("7k/PPPPPP2/8/8/8/8/pppppp2/7K w - - 0 1"); //
-
+        FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
+        //FENtoPosition("7k/PPPPPP2/8/8/8/8/pppppp2/7K w - - 0 1"); //
+        
         for (int i = 0; i < index_black; i++)
         {
             SetPosition(playerBlack[i]);

@@ -153,7 +153,7 @@ public class PieceController : MonoBehaviour
                 if (cam.numberOfChecks <= 1)
                 {
                     PawnMovePlate(xBoard, yBoard + 1);
-                    if (yBoard == 1) if (gs.GetPosition(xBoard, yBoard + 1) == null) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
+                    if (yBoard == 1) if (gs.GetPosition(xBoard, yBoard + 1) == null) PawnMovePlate(xBoard, yBoard + 2); // possible only if the pawn is in the starting pos
                     PawnAttackMovePlate(xBoard - 1, yBoard + 1);
                     PawnAttackMovePlate(xBoard + 1, yBoard + 1);
                     //EnPassantMovePlate();

@@ -8,6 +8,7 @@ TagManager:
   - Board
   - white_check
   - black_check
+  - Canvas
   layers:
   - Default
   - TransparentFX
