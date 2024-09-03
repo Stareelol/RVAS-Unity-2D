@@ -310,7 +310,11 @@ public class CalculateAllMoves : MonoBehaviour
                         break;
                     }
                 }
-                else break;
+                else if (second == first)
+                {
+                    allMoves.Add(x + " " + y);
+                    break;
+                }
             }
             if(sc.PositionOnBoard(x, y)){
                 if (pieceOnBoard == null)
@@ -422,16 +426,13 @@ public class CalculateAllMoves : MonoBehaviour
     public void PawnAttackMovePlate(int x, int y, string piece)
     {
         GameScript sc = controller.GetComponent<GameScript>();
-        string player = sc.GetCurrentPlayer();
-
         string[] compare = null;
 
         if (sc.PositionOnBoard(x, y))
         {
             if (sc.GetPosition(x, y) != null) compare = sc.GetPosition(x, y).name.Split("_");
             if (sc.GetPosition(x, y) != null) second = compare[0];
-
-            if (sc.GetPosition(x, y) != null && first != second)
+            if (sc.GetPosition(x, y) != null && second!=first)
             {
                 if (sc.GetPosition(x, y).name == "white_king" || sc.GetPosition(x, y).name == "black_king")
                 {

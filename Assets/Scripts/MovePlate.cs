@@ -11,6 +11,7 @@ public class MovePlate : MonoBehaviour
     GameObject board;
 
     GameObject canvas;
+    GameObject clock;
 
     int matrixX;
     int matrixY;
@@ -29,11 +30,14 @@ public class MovePlate : MonoBehaviour
         move = controller.GetComponent<AudioSource>();
         board = GameObject.FindGameObjectWithTag("Board");
         capture = board.GetComponent<AudioSource>();
+        clock = GameObject.FindGameObjectWithTag("Clock");
 
 
         if (attack)
         {
-            gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+            this.GetComponent<SpriteRenderer>().material.color = new Color(220, 0, 0) {
+                a = 0.9f
+            };
         }
     }
 
@@ -43,6 +47,10 @@ public class MovePlate : MonoBehaviour
         GameScript gs = controller.GetComponent<GameScript>();
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
         CalculateAllDMoves cadm = controller.GetComponent<CalculateAllDMoves>();
+
+        if (gs.startClock == true) clock.GetComponent<TimerScript>().AddSecondsToClock(gs.GetCurrentPlayer());
+        if (gs.GetCurrentPlayer() == "white" && gs.startClock == false) gs.startClock = true;
+
 
         if (attack)
         {
@@ -66,26 +74,21 @@ public class MovePlate : MonoBehaviour
             cam.Calculate(gs.GetCurrentPlayer());
             //cam.AddMovesToList();
 
-            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
-            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
-
             gs.NextTurn();
             RemoveCastlingIfChecked(gs.GetCurrentPlayer());
             cadm.Calculate(gs.GetCurrentPlayer());
             cadm.IsCheckmate(gs.GetCurrentPlayer());
+
+            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
+            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
+
             createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
+            createdByPiece.GetComponent<PieceController>().DestroyClick();
         }
 
         else
         {
             move.Play(0);
-
-            //if (createdByPiece.GetComponent<PieceController>().name == "white_pawn" || createdByPiece.GetComponent<PieceController>().name == "black_pawn")
-            //{
-            //    SetEnPassantSquare();
-            //    CheckEnPassant();
-            //}
-            //else gs.GetComponent<GameScript>().EnPassantSquare = " ";
 
             gs.SetPositionEmpty(createdByPiece.GetComponent<PieceController>().xBoard, createdByPiece.GetComponent<PieceController>().yBoard);
             createdByPiece.GetComponent<PieceController>().xBoard = matrixX;
@@ -93,16 +96,19 @@ public class MovePlate : MonoBehaviour
             createdByPiece.GetComponent<PieceController>().SetCoords();
             gs.SetPosition(createdByPiece);
 
-            CheckPromotion(gs.GetCurrentPlayer());
+            //if (createdByPiece.GetComponent<PieceController>().name == "white_pawn" || createdByPiece.GetComponent<PieceController>().name == "black_pawn" && (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false))
+            //{
+            //    CheckEnPassant();
+            //    SetEnPassantSquare();
+            //}
+            //else gs.GetComponent<GameScript>().EnPassantSquare = " ";
 
+            CheckPromotion(gs.GetCurrentPlayer());
             CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
             cam.Calculate(gs.GetCurrentPlayer());
             //cam.AddMovesToList();
-
-            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
-            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
 
             gs.NextTurn();
 
@@ -110,7 +116,11 @@ public class MovePlate : MonoBehaviour
             cadm.IsCheckmate(gs.GetCurrentPlayer());
             RemoveCastlingIfChecked(gs.GetCurrentPlayer());
 
-            createdByPiece.GetComponent<PieceController>().DestroyMovePlates(); 
+            if (cam.blackChecked == false && gs.GetCurrentPlayer() == "white") if (GameObject.FindWithTag("black_check") != null) Destroy(GameObject.FindWithTag("black_check"));
+            if (cam.whiteChecked == false && gs.GetCurrentPlayer() == "black") if (GameObject.FindWithTag("white_check") != null) Destroy(GameObject.FindWithTag("white_check"));
+
+            createdByPiece.GetComponent<PieceController>().DestroyMovePlates();
+            createdByPiece.GetComponent<PieceController>().DestroyClick();
         }
 
     }
@@ -151,15 +161,20 @@ public class MovePlate : MonoBehaviour
         if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
         if (ep != null)
         {
-            Debug.Log(gs.GetPosition(matrixX, matrixY));
-            if ((matrixX - int.Parse(ep[0])) == 0 && Mathf.Abs(matrixY - int.Parse(ep[1])) == 1)
-            {
-                if (CheckEndCase(matrixX, matrixY, int.Parse(ep[0]), int.Parse(ep[1])) != true)
-                {
-                    Destroy(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
-                    gs.SetPositionEmpty(int.Parse(ep[0]), int.Parse(ep[1]));
-                }
-            }
+            Debug.Log(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
+            Debug.Log(matrixX + ", " + matrixY + " name: " + gs.GetPosition(matrixX, matrixY));
+
+
+
+            //if ((matrixX - int.Parse(ep[0])) == 0 && Mathf.Abs(matrixY - int.Parse(ep[1])) == 1)
+            //{
+            //    Debug.Log(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
+            //    //if (CheckEndCase(matrixX, matrixY, int.Parse(ep[0]), int.Parse(ep[1])) != true)
+            //    //{
+            //        Destroy(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
+            //        gs.SetPositionEmpty(int.Parse(ep[0]), int.Parse(ep[1]));
+            //    //}
+            //}
         }
 
     }
@@ -167,9 +182,6 @@ public class MovePlate : MonoBehaviour
     public bool CheckEndCase(int playX, int playY, int compX, int compY) {
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
-        //Debug.Log(playX + ", " + playY + ", " + compX + ", " + compY);
-        Debug.Log(gs.GetPosition(playX, playY));
-        Debug.Log(gs.GetPosition(compX, compY));
         if (gs.PositionOnBoard(playX, playY) && gs.PositionOnBoard(compX, compY) && gs.GetPosition(playX, playY) != null && gs.GetPosition(compX, compY)!= null)
         {
             Debug.Log("here!");

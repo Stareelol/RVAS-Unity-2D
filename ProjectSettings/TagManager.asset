@@ -9,6 +9,8 @@ TagManager:
   - white_check
   - black_check
   - Canvas
+  - ClickPlate
+  - Clock
   layers:
   - Default
   - TransparentFX

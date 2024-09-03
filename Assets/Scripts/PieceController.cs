@@ -1,13 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PieceController : MonoBehaviour
 {
     public GameObject controller;
     public GameObject movePlate;
+    public GameObject clickPlate;
 
     public int xBoard = -1;
     public int yBoard = -1;
@@ -29,7 +26,7 @@ public class PieceController : MonoBehaviour
             case "black_king": this.GetComponent<SpriteRenderer>().sprite = black_king; player = "black"; break;
             case "black_knight": this.GetComponent<SpriteRenderer>().sprite = black_knight; player = "black"; break;
             case "black_pawn": this.GetComponent<SpriteRenderer>().sprite = black_pawn; player = "black"; break;
-            case "black_bishop": this.GetComponent<SpriteRenderer>().sprite = black_bishop;player = "black"; break;
+            case "black_bishop": this.GetComponent<SpriteRenderer>().sprite = black_bishop; player = "black"; break;
             case "black_queen": this.GetComponent<SpriteRenderer>().sprite = black_queen; player = "black"; break;
             case "black_rook": this.GetComponent<SpriteRenderer>().sprite = black_rook; player = "black"; break;
 
@@ -51,19 +48,19 @@ public class PieceController : MonoBehaviour
         x *= 1f;
         y *= 1f;
 
-        x *= 1.235f;
-        x += -7.3f;
+        x *= 1.24f;
+        x += -7.34f;
 
         switch (y)
         {
-            case 0: y = -4.4f; break; // -4.4
-            case 1: y = -3.15f; break; // -3.15
-            case 2: y = -1.9f; break; // -1.9
-            case 3: y = -0.65f; break; // -0.65
-            case 4: y = 0.6f; break; // -0.65
-            case 5: y = 1.8f; break; // 1.8
+            case 0: y = -4.34f; break; // -4.4
+            case 1: y = -3.1f; break; // -3.15
+            case 2: y = -1.86f; break; // -1.9
+            case 3: y = -0.62f; break; // -0.65
+            case 4: y = 0.62f; break; // -0.65
+            case 5: y = 1.86f; break; // 1.8
             case 6: y = 3.1f; break; // 3.1
-            case 7: y = 4.3f; break; // 4.3
+            case 7: y = 4.34f; break; // 4.3
         }
 
         this.transform.position = new Vector3(x, y, -1.0f);
@@ -72,24 +69,35 @@ public class PieceController : MonoBehaviour
     private void OnMouseUp()
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
-        if( controller.GetComponent<GameScript>().GetCurrentPlayer() == player)
+        if (controller.GetComponent<GameScript>().GetCurrentPlayer() == player)
         {
             DestroyMovePlates();
             InitiateMovePlates();
+            DestroyClick();
+            DrawClick();
         }
-        
+
+    }
+
+    public void DrawClick()
+    {
+        Instantiate(clickPlate, new Vector3(this.transform.position.x, this.transform.position.y, -1), Quaternion.identity);
+    }
+
+    public void DestroyClick()
+    {
+        GameObject[] toRemove = GameObject.FindGameObjectsWithTag("ClickPlate");
+        foreach (GameObject go in toRemove) { Destroy(go); }
     }
 
     public void DestroyMovePlates()
     {
         GameObject[] movePlates = GameObject.FindGameObjectsWithTag("MovePlate");
-        for (int i = 0; i < movePlates.Length; i++)
-        {
-            Destroy(movePlates[i]);
-        }
+        foreach (GameObject mp in movePlates) { Destroy(mp); }
     }
 
-    public void InitiateMovePlates() {
+    public void InitiateMovePlates()
+    {
 
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
@@ -99,32 +107,32 @@ public class PieceController : MonoBehaviour
         {
             case "black_rook":
             case "white_rook":
-                if (cam.numberOfChecks <= 1) 
+                if (cam.numberOfChecks <= 1)
                 {
                     LineMovePlate(1, 0);
                     LineMovePlate(0, 1);
                     LineMovePlate(-1, 0);
                     LineMovePlate(0, -1);
                 }
-            break;
+                break;
             case "black_knight":
             case "white_knight":
                 if (cam.numberOfChecks <= 1) KnightMovePlate();
-            break;
+                break;
             case "black_bishop":
             case "white_bishop":
-                if (cam.numberOfChecks <= 1) 
+                if (cam.numberOfChecks <= 1)
                 {
                     LineMovePlate(1, 1);
                     LineMovePlate(1, -1);
                     LineMovePlate(-1, 1);
                     LineMovePlate(-1, -1);
                 }
-            break;
+                break;
             case "black_king":
             case "white_king":
                 KingMovePlate();
-            break;
+                break;
             case "black_queen":
             case "white_queen":
                 if (cam.numberOfChecks <= 1)
@@ -138,17 +146,17 @@ public class PieceController : MonoBehaviour
                     LineMovePlate(-1, 1);
                     LineMovePlate(1, -1);
                 }
-            break;
+                break;
             case "black_pawn":
                 if (cam.numberOfChecks <= 1)
                 {
                     PawnMovePlate(xBoard, yBoard - 1);
-                    if (yBoard == 6) if (gs.GetPosition(xBoard,yBoard - 1) == null) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
+                    if (yBoard == 6) if (gs.GetPosition(xBoard, yBoard - 1) == null) PawnMovePlate(xBoard, yBoard - 2); // possible only if the pawn is in the starting pos
                     PawnAttackMovePlate(xBoard - 1, yBoard - 1);
                     PawnAttackMovePlate(xBoard + 1, yBoard - 1);
                     //EnPassantMovePlate();
                 }
-            break;
+                break;
             case "white_pawn":
                 if (cam.numberOfChecks <= 1)
                 {
@@ -158,14 +166,13 @@ public class PieceController : MonoBehaviour
                     PawnAttackMovePlate(xBoard + 1, yBoard + 1);
                     //EnPassantMovePlate();
                 }
-            break;
+                break;
         }
     }
 
     public void EnPassantMovePlate()
     {
         string[] ep = null;
-        ep = null;
         controller = GameObject.FindGameObjectWithTag("GameController");
         GameScript gs = controller.GetComponent<GameScript>();
         if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
@@ -173,7 +180,13 @@ public class PieceController : MonoBehaviour
         {
             int epX = int.Parse(ep[0]);
             int epY = int.Parse(ep[1]);
-            if (epY == yBoard)
+            if (epY == yBoard && epY == 3 && yBoard == 3)
+            {
+                if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard - 1);
+                else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard - 1);
+            }
+
+            if (epY == yBoard && epY == 4 && yBoard == 4)
             {
                 if ((epX - xBoard) == -1) PawnMovePlate(xBoard - 1, yBoard + 1);
                 else if ((epX - xBoard) == 1) PawnMovePlate(xBoard + 1, yBoard + 1);
@@ -181,7 +194,7 @@ public class PieceController : MonoBehaviour
         }
     }
 
-    public void LineMovePlate (int xIncrement, int yIncrement)
+    public void LineMovePlate(int xIncrement, int yIncrement)
     {
         GameScript sc = controller.GetComponent<GameScript>();
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
@@ -189,7 +202,7 @@ public class PieceController : MonoBehaviour
         int x = xBoard + xIncrement;
         int y = yBoard + yIncrement;
 
-        while (sc.PositionOnBoard(x,y) && sc.GetPosition(x, y) == null)
+        while (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) == null)
         {
             if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
             {
@@ -216,7 +229,7 @@ public class PieceController : MonoBehaviour
         }
     }
 
-    public void KnightMovePlate() 
+    public void KnightMovePlate()
     {
         PointMovePlate(xBoard + 2, yBoard + 1);
         PointMovePlate(xBoard + 1, yBoard + 2);
@@ -234,21 +247,21 @@ public class PieceController : MonoBehaviour
         GameScript sc = controller.GetComponent<GameScript>();
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
 
-        PointMovePlateKing(xBoard, yBoard + 1);
-        PointMovePlateKing(xBoard, yBoard - 1);
-        PointMovePlateKing(xBoard - 1, yBoard - 1);
-        PointMovePlateKing(xBoard - 1, yBoard);
-        PointMovePlateKing(xBoard - 1, yBoard + 1);
-        PointMovePlateKing(xBoard + 1, yBoard - 1);
-        PointMovePlateKing(xBoard + 1, yBoard);
-        PointMovePlateKing(xBoard + 1, yBoard + 1);
+        if (cam.CheckMoveInList(xBoard, yBoard + 1) == false) PointMovePlateKing(xBoard, yBoard + 1);
+        if (cam.CheckMoveInList(xBoard, yBoard - 1) == false) PointMovePlateKing(xBoard, yBoard - 1);
+        if (cam.CheckMoveInList(xBoard - 1, yBoard - 1) == false) PointMovePlateKing(xBoard - 1, yBoard - 1);
+        if (cam.CheckMoveInList(xBoard - 1, yBoard) == false) PointMovePlateKing(xBoard - 1, yBoard);
+        if (cam.CheckMoveInList(xBoard - 1, yBoard + 1) == false) PointMovePlateKing(xBoard - 1, yBoard + 1);
+        if (cam.CheckMoveInList(xBoard + 1, yBoard - 1) == false) PointMovePlateKing(xBoard + 1, yBoard - 1);
+        if (cam.CheckMoveInList(xBoard + 1, yBoard) == false) PointMovePlateKing(xBoard + 1, yBoard);
+        if (cam.CheckMoveInList(xBoard + 1, yBoard + 1) == false) PointMovePlateKing(xBoard + 1, yBoard + 1);
 
         if (sc.GetCurrentPlayer() == "white" && sc.WhiteCastleKingAllowed == true)
         {
             if (sc.PositionOnBoard(xBoard + 1, yBoard) && sc.PositionOnBoard(xBoard + 2, yBoard) && sc.PositionOnBoard(xBoard + 3, yBoard))
                 if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
                 {
-                    PointMovePlateKing(xBoard + 2, yBoard);
+                    if (cam.CheckMoveInList(xBoard + 2, yBoard) == false) PointMovePlateKing(xBoard + 2, yBoard);
                 };
         }
 
@@ -257,7 +270,7 @@ public class PieceController : MonoBehaviour
             if (sc.PositionOnBoard(xBoard + 1, yBoard) && sc.PositionOnBoard(xBoard + 2, yBoard) && sc.PositionOnBoard(xBoard + 3, yBoard))
                 if (sc.GetPosition(xBoard + 1, yBoard) == null && sc.GetPosition(xBoard + 2, yBoard) == null && sc.GetPosition(xBoard + 3, yBoard) != null && (sc.GetPosition(xBoard + 3, yBoard).name == "white_rook" || sc.GetPosition(xBoard + 3, yBoard).name == "black_rook"))
                 {
-                    PointMovePlateKing(xBoard + 2, yBoard);
+                    if (cam.CheckMoveInList(xBoard + 2, yBoard) == false) PointMovePlateKing(xBoard + 2, yBoard);
                 };
         }
 
@@ -266,7 +279,7 @@ public class PieceController : MonoBehaviour
             if (sc.PositionOnBoard(xBoard - 1, yBoard) && sc.PositionOnBoard(xBoard - 2, yBoard) && sc.PositionOnBoard(xBoard - 3, yBoard) && sc.PositionOnBoard(xBoard - 4, yBoard))
                 if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
                 {
-                    PointMovePlateKing(xBoard - 2, yBoard);
+                    if (cam.CheckMoveInList(xBoard - 2, yBoard) == false) PointMovePlateKing(xBoard - 2, yBoard);
                 }
         }
 
@@ -275,7 +288,7 @@ public class PieceController : MonoBehaviour
             if (sc.PositionOnBoard(xBoard - 1, yBoard) && sc.PositionOnBoard(xBoard - 2, yBoard) && sc.PositionOnBoard(xBoard - 3, yBoard) && sc.PositionOnBoard(xBoard - 4, yBoard))
                 if (sc.GetPosition(xBoard - 1, yBoard) == null && sc.GetPosition(xBoard - 2, yBoard) == null && sc.GetPosition(xBoard - 3, yBoard) == null && (sc.GetPosition(xBoard - 4, yBoard).name == "white_rook" || sc.GetPosition(xBoard - 4, yBoard).name == "black_rook"))
                 {
-                    PointMovePlateKing(xBoard - 2, yBoard);
+                    if (cam.CheckMoveInList(xBoard - 2, yBoard) == false) PointMovePlateKing(xBoard - 2, yBoard);
                 }
         }
     }
@@ -294,7 +307,7 @@ public class PieceController : MonoBehaviour
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {
-                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (cam.CheckSlidingMoveInList(x,y)) MovePlateSpawn(x, y);
+                    if (cam.canMoveWithoutCheck(xBoard, yBoard)) if (cam.CheckSlidingMoveInList(x, y)) MovePlateSpawn(x, y);
                 }
                 else
                 {
@@ -328,7 +341,7 @@ public class PieceController : MonoBehaviour
 
             if (cp == null)
             {
-                if (cam.canMoveWithoutCheck(xBoard, yBoard)) MovePlateSpawn(x, y);
+                MovePlateSpawn(x, y);
             }
 
             else if (cp.GetComponent<PieceController>().player != player)
@@ -351,7 +364,7 @@ public class PieceController : MonoBehaviour
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
         if (sc.PositionOnBoard(x, y))
         {
-            if (sc.GetPosition(x,y) == null)
+            if (sc.GetPosition(x, y) == null)
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {
@@ -394,19 +407,19 @@ public class PieceController : MonoBehaviour
         x *= 1f;
         y *= 1f;
 
-        x *= 1.235f;
-        x += -7.3f;
+        x *= 1.24f;
+        x += -7.34f;
 
         switch (y)
         {
-            case 0: y = -4.4f; break; // -4.4
-            case 1: y = -3.15f; break; // -3.15
-            case 2: y = -1.9f; break; // -1.9
-            case 3: y = -0.65f; break; // -0.65
-            case 4: y = 0.6f; break; // -0.65
-            case 5: y = 1.8f; break; // 1.8
+            case 0: y = -4.34f; break; // -4.4
+            case 1: y = -3.1f; break; // -3.15
+            case 2: y = -1.86f; break; // -1.9
+            case 3: y = -0.62f; break; // -0.65
+            case 4: y = 0.62f; break; // -0.65
+            case 5: y = 1.86f; break; // 1.8
             case 6: y = 3.1f; break; // 3.1
-            case 7: y = 4.3f; break; // 4.3
+            case 7: y = 4.34f; break; // 4.3
         }
 
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
@@ -425,23 +438,23 @@ public class PieceController : MonoBehaviour
         x *= 1f;
         y *= 1f;
 
-        x *= 1.235f;
-        x += -7.3f;
+        x *= 1.24f;
+        x += -7.34f;
 
         switch (y)
         {
-            case 0: y = -4.4f; break; // -4.4
-            case 1: y = -3.15f; break; // -3.15
-            case 2: y = -1.9f; break; // -1.9
-            case 3: y = -0.65f; break; // -0.65
-            case 4: y = 0.6f; break; // -0.65
-            case 5: y = 1.8f; break; // 1.8
+            case 0: y = -4.34f; break; // -4.4
+            case 1: y = -3.1f; break; // -3.15
+            case 2: y = -1.86f; break; // -1.9
+            case 3: y = -0.62f; break; // -0.65
+            case 4: y = 0.62f; break; // -0.65
+            case 5: y = 1.86f; break; // 1.8
             case 6: y = 3.1f; break; // 3.1
-            case 7: y = 4.3f; break; // 4.3
+            case 7: y = 4.34f; break; // 4.3
         }
 
         GameObject mp = Instantiate(movePlate, new Vector3(x, y, -3.0f), Quaternion.identity);
-        mp.GetComponent<Renderer>().material.color = new Color(255, 0, 0);
+        //mp.GetComponent<Renderer>().material.color = new Color(255, 0, 0);
         MovePlate mpScript = mp.GetComponent<MovePlate>();
         mpScript.attack = true;
         mpScript.SetReference(gameObject);
