@@ -261,7 +261,7 @@ public class CalculateAllDMoves : MonoBehaviour
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
         if (sc.PositionOnBoard(x, y))
         {
-            if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && sc.GetPosition(x, y).GetComponent<PieceController>().player != player)
+            if (sc.PositionOnBoard(x, y) && sc.GetPosition(x, y) != null && sc.GetPosition(x, y).GetComponent<PieceController>().player != sc.GetCurrentPlayer())
             {
                 if ((sc.GetCurrentPlayer() == "black" && cam.blackChecked == true) || (sc.GetCurrentPlayer() == "white" && cam.whiteChecked == true))
                 {

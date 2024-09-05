@@ -30,6 +30,7 @@ public class TimerScript : MonoBehaviour
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
         gs = controller.GetComponent<GameScript>();
+        cam = controller.GetComponent<CalculateAllMoves>();
 
         time = clockTimeMinutes * 60 + clockTimeSeconds;
         elapsedTimeWhite = time;
@@ -56,12 +57,12 @@ public class TimerScript : MonoBehaviour
             elapsedTimeBlack -= Time.deltaTime;
         }
 
-        if (elapsedTimeBlack <= 0)
+        if (elapsedTimeBlack <= 0 || cam.blackChecked)
         {
             SceneManager.LoadScene("Game");
         }
 
-        if (elapsedTimeWhite <= 0)
+        if (elapsedTimeWhite <= 0 || cam.whiteChecked)
         {
             SceneManager.LoadScene("Game");
         }

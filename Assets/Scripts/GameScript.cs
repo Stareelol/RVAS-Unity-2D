@@ -30,7 +30,6 @@ public class GameScript : MonoBehaviour
 
     public string currentPlayer = "white";
 
-    private bool gameOver = false;
     public bool startClock = false;
 
     public void FENtoPosition(string FEN)
@@ -101,15 +100,9 @@ public class GameScript : MonoBehaviour
     {
 
         CalculateAllMoves cam = this.GetComponent<CalculateAllMoves>();
-        CalculateAllDMoves camd = this.GetComponent<CalculateAllDMoves>();
 
         FENtoPosition("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // default position
-        //FENtoPosition("7N/6N1/5N2/4N3/3N4/2N5/1N6/N7 w - - 0 1"); // testing positions
-        //7k/8/8/8/4p3/8/3P4/K7 w - - 0 1
-        //7k/3p4/8/4P3/8/8/8/K7 b - - 0 1
-        //7k/8/8/8/3p4/8/4P3/K7 w - - 0 1
-        //7k/4p3/8/3P4/8/8/8/K7 b - - 0 1
-
+        //FENtoPosition("rnbqkbnr/pp1p1ppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"); // testing positions
 
         for (int i = 0; i < index_black; i++)
         {
@@ -135,8 +128,6 @@ public class GameScript : MonoBehaviour
         controller.Activate();
         return obj;
     }
-
-    
 
     public void SetPosition(GameObject obj) 
     {
@@ -165,11 +156,6 @@ public class GameScript : MonoBehaviour
     public string GetCurrentPlayer()
     {
         return currentPlayer;
-    }
-
-    public bool IsGameOver()
-    {
-        return gameOver;
     }
 
     public void NextTurn()

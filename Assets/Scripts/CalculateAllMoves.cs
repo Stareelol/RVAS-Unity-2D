@@ -46,7 +46,10 @@ public class CalculateAllMoves : MonoBehaviour
                     xBoard = gs.GetPosition(j, i).GetComponent<PieceController>().xBoard;
                     yBoard = gs.GetPosition(j, i).GetComponent<PieceController>().yBoard;
 
-                    if (player == gs.GetPosition(j, i).name.Substring(0,5)) SpawnPossibleMoves(gs.GetPosition(j, i).name);
+                    if (player == gs.GetPosition(j, i).name.Substring(0, 5))
+                    {
+                        SpawnPossibleMoves(gs.GetPosition(j, i).name);
+                    }
                 }
             }
     }
@@ -174,15 +177,11 @@ public class CalculateAllMoves : MonoBehaviour
                 SlidingMovePlateCalculate(1, -1, piece);
                 break;
             case "black_pawn":
-                PawnMovePlate(xBoard, yBoard - 1, piece);
-                if (yBoard == 6) if (gs.GetPosition(xBoard, yBoard - 1) == null) PawnMovePlate(xBoard, yBoard - 2, piece); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard - 1, piece);
                 PawnAttackMovePlate(xBoard + 1, yBoard - 1, piece);
                 //CheckEnPassant();
                 break;
             case "white_pawn":
-                PawnMovePlate(xBoard, yBoard + 1, piece);
-                if (yBoard == 1) if (gs.GetPosition(xBoard, yBoard + 1) == null) PawnMovePlate(xBoard, yBoard + 2, piece); // possible only if the pawn is in the starting pos
                 PawnAttackMovePlate(xBoard - 1, yBoard + 1, piece);
                 PawnAttackMovePlate(xBoard + 1, yBoard + 1, piece);
                 //CheckEnPassant();
@@ -407,18 +406,6 @@ public class CalculateAllMoves : MonoBehaviour
                 {
                     allMoves.Add(x + " " + y);
                 }
-            }
-        }
-    }
-
-    public void PawnMovePlate(int x, int y, string piece)
-    {
-        GameScript sc = controller.GetComponent<GameScript>();
-        if (sc.PositionOnBoard(x, y))
-        {
-            if (sc.GetPosition(x, y) == null)
-            {
-                allMoves.Add(x + " " + y);
             }
         }
     }
