@@ -11,6 +11,7 @@ TagManager:
   - Canvas
   - ClickPlate
   - Clock
+  - Panel
   layers:
   - Default
   - TransparentFX

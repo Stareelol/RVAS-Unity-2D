@@ -40,19 +40,21 @@ public class CalculateAllDMoves : MonoBehaviour
     {
 
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
+        GameObject clock_object = GameObject.FindGameObjectWithTag("Clock");
+        TimerScript ts = clock_object.GetComponent<TimerScript>();
 
         switch (player)
         {
             case "black":
                 {
-                    if (cam.blackChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("white checkmate");
-                    if (cam.blackChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("stalemate");
+                    if (cam.blackChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) ts.ShowCheckmateScreen("white");
+                    if (cam.blackChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) ts.ShowCheckmateScreen("stalemate");
                 };
                 break;
             case "white":
                 {
-                    if (cam.whiteChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("black checkmate");
-                    if (cam.whiteChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) Debug.Log("stalemate");
+                    if (cam.whiteChecked == true && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) ts.ShowCheckmateScreen("black");
+                    if (cam.whiteChecked == false && allDefensiveMoves.Count == 0 && kingDefensiveMoves.Count == 0) ts.ShowCheckmateScreen("stalemate");
                 };
                 break;
         }

@@ -30,7 +30,8 @@ public class GameScript : MonoBehaviour
 
     public string currentPlayer = "white";
 
-    public bool startClock = false;
+    public bool startClockWhite = false;
+    public bool startClockBlack = false;
 
     public void FENtoPosition(string FEN)
     {

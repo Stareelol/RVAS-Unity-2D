@@ -48,8 +48,10 @@ public class MovePlate : MonoBehaviour
         CalculateAllMoves cam = controller.GetComponent<CalculateAllMoves>();
         CalculateAllDMoves cadm = controller.GetComponent<CalculateAllDMoves>();
 
-        if (gs.startClock == true) clock.GetComponent<TimerScript>().AddSecondsToClock(gs.GetCurrentPlayer());
-        if (gs.GetCurrentPlayer() == "white" && gs.startClock == false) gs.startClock = true;
+        if (gs.startClockWhite && gs.startClockBlack) clock.GetComponent<TimerScript>().AddSecondsToClock(gs.GetCurrentPlayer());
+
+        if (gs.GetCurrentPlayer() == "white" && gs.startClockWhite == false) gs.startClockWhite = true;
+        if (gs.GetCurrentPlayer() == "black" && gs.startClockWhite && gs.startClockBlack == false) gs.startClockBlack = true;
 
 
         if (attack)
@@ -72,7 +74,6 @@ public class MovePlate : MonoBehaviour
             CheckPromotion(gs.GetCurrentPlayer());
 
             cam.Calculate(gs.GetCurrentPlayer());
-            //cam.AddMovesToList();
 
             gs.NextTurn();
             RemoveCastlingIfChecked(gs.GetCurrentPlayer());
@@ -96,19 +97,11 @@ public class MovePlate : MonoBehaviour
             createdByPiece.GetComponent<PieceController>().SetCoords();
             gs.SetPosition(createdByPiece);
 
-            //if (createdByPiece.GetComponent<PieceController>().name == "white_pawn" || createdByPiece.GetComponent<PieceController>().name == "black_pawn" && (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false))
-            //{
-            //    CheckEnPassant();
-            //    SetEnPassantSquare();
-            //}
-            //else gs.GetComponent<GameScript>().EnPassantSquare = " ";
-
             CheckPromotion(gs.GetCurrentPlayer());
             CheckCastlingShort(createdByPiece.GetComponent<PieceController>().name);
             CheckCastlingLong(createdByPiece.GetComponent<PieceController>().name);
 
             cam.Calculate(gs.GetCurrentPlayer());
-            //cam.AddMovesToList();
 
             gs.NextTurn();
 
@@ -152,73 +145,9 @@ public class MovePlate : MonoBehaviour
         }
     }
 
-    public void CheckEnPassant()
-    {
-        controller = GameObject.FindGameObjectWithTag("GameController");
-        GameScript gs = controller.GetComponent<GameScript>();
-
-        string[] ep = null;
-        if (gs.EnPassantSquare != " " && string.Equals(gs.EnPassantSquare, "-") == false) ep = gs.EnPassantSquare.Split(' ');
-        if (ep != null)
-        {
-            Debug.Log(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
-            Debug.Log(matrixX + ", " + matrixY + " name: " + gs.GetPosition(matrixX, matrixY));
-
-
-
-            //if ((matrixX - int.Parse(ep[0])) == 0 && Mathf.Abs(matrixY - int.Parse(ep[1])) == 1)
-            //{
-            //    Debug.Log(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
-            //    //if (CheckEndCase(matrixX, matrixY, int.Parse(ep[0]), int.Parse(ep[1])) != true)
-            //    //{
-            //        Destroy(gs.GetPosition(int.Parse(ep[0]), int.Parse(ep[1])));
-            //        gs.SetPositionEmpty(int.Parse(ep[0]), int.Parse(ep[1]));
-            //    //}
-            //}
-        }
-
-    }
-
-    public bool CheckEndCase(int playX, int playY, int compX, int compY) {
-        controller = GameObject.FindGameObjectWithTag("GameController");
-        GameScript gs = controller.GetComponent<GameScript>();
-        if (gs.PositionOnBoard(playX, playY) && gs.PositionOnBoard(compX, compY) && gs.GetPosition(playX, playY) != null && gs.GetPosition(compX, compY)!= null)
-        {
-            Debug.Log("here!");
-            if (gs.GetPosition(playX, playY).name == "black_pawn" && gs.GetPosition(compX, compY).name == "white_pawn")
-            {
-                Debug.Log("hereB!");
-                if ((playY - compY) == 1) return true;
-            }
-            if (gs.GetPosition(playX, playY).name == "white_pawn" && gs.GetPosition(compX, compY).name == "black_pawn")
-            {
-                Debug.Log("hereW!");
-                if ((playY - compY) == -1) return true;
-            }
-        }
-        return false;
-    }
-    public void SetEnPassantSquare()
-    {
-
-        controller = GameObject.FindGameObjectWithTag("GameController");
-        GameScript gs = controller.GetComponent<GameScript>();
-
-        int previousX = createdByPiece.GetComponent<PieceController>().xBoard;
-        int previousY = createdByPiece.GetComponent<PieceController>().yBoard;
-
-        if (Mathf.Abs((matrixY - previousY)) == 2 && matrixX == previousX)
-        {
-            gs.EnPassantSquare = matrixX.ToString() + " " + matrixY.ToString();
-        }
-
-        else gs.GetComponent<GameScript>().EnPassantSquare = " ";
-    }
-
     public void CheckPromotion(string player) 
     {
         controller = GameObject.FindGameObjectWithTag("GameController");
-        GameScript gs = controller.GetComponent<GameScript>();
         GameObject canvas_object = GameObject.FindGameObjectWithTag("Canvas");
         CanvasScript cs = canvas_object.GetComponent<CanvasScript>();
 
