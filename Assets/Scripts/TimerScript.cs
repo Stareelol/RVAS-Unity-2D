@@ -39,6 +39,9 @@ public class TimerScript : MonoBehaviour
         controller = GameObject.FindGameObjectWithTag("GameController");
         gs = controller.GetComponent<GameScript>();
 
+        clockTimeMinutes = PlayerPrefs.GetInt("time");
+        bonusSeconds = PlayerPrefs.GetInt("bonus");
+
         panel = GameObject.FindGameObjectWithTag("Panel");
         panel.SetActive(false);
         checkmateText.enabled = false;
@@ -77,12 +80,12 @@ public class TimerScript : MonoBehaviour
 
         if (elapsedTimeBlack <= 0) 
         {
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Main Menu");
         }
 
         if (elapsedTimeWhite <= 0) 
         {
-            SceneManager.LoadScene("Game");
+            SceneManager.LoadScene("Main Menu");
         }
 
         if (gs.startClockWhite == false)
@@ -162,6 +165,6 @@ public class TimerScript : MonoBehaviour
 
     public void CloseAndRestart()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("Main Menu");
     }
 }
